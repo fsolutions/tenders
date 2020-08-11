@@ -1,17 +1,17 @@
 <template>
 <div class="container">
-	<div class="platform__header">
-		<div class="platform__header__bg"></div>
+	<div class="order__header">
+		<div class="order__header__bg"></div>
 
         <div class="container px-5">
             <div class="row">
                 <div class="col-sm-12 col-md-3 text-center text-md-left pt-3 mt-0 pt-md-4 mt-md-2">
-                    <a href="/platforms/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Refollower"></a>
+                    <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a>
                 </div>
-                <div class="d-none d-md-block col-sm-12 col-md-6 platform__header__settings__mainblock">
+                <div class="d-none d-md-block col-sm-12 col-md-6 order__header__settings__mainblock">
                 </div>
                 <div class="col-sm-12 col-md-3 text-center text-md-right pt-4 mt-1">
-                    <button class="btn btn-success" @click="newPlatform()">
+                    <button class="btn btn-success" @click="newOrder()">
                         Новая площадка <i class="far fa-plus-square ml-1"></i>
                     </button>
                 </div>
@@ -19,7 +19,7 @@
         </div><!--/container-->
 
     </div>
-    <!--/platform__header-->  
+    <!--/order__header-->  
 
     <section class="mx-5">
         <div class="row my-3">
@@ -49,20 +49,20 @@
                     </thead>
 
                     <tbody>
-                        <tr v-for="(platform, index)  in platforms.data" :key="platform.id">
+                        <tr v-for="(order, index)  in orders.data" :key="order.id">
 
-                            <td class="text-center">{{platform.id}}</td>
-                            <td><b><a :href="`/platforms/page/${platform.id}`">{{platform.name}}</a></b></td>
-                            <td><a :href="platform.url" target="_blank">{{platform.url}} <i class="fas fa-external-link-alt"></i></a></td>
-                            <td :class='statusTextColor(platform.status)'>{{platform.status_stringify}}</td>
-                            <td class="text-center">{{platform.paid_till_formated}} <span class="text-danger ml-1" v-if="!platform.is_paied" title="Необходимо оплатить"><i class="fas fa-exclamation-triangle"></i></span></td>
-                            <td class="text-center">{{platform.created_at}}</td>
+                            <td class="text-center">{{order.id}}</td>
+                            <td><b><a :href="`/orders/page/${order.id}`">{{order.name}}</a></b></td>
+                            <td><a :href="order.url" target="_blank">{{order.url}} <i class="fas fa-external-link-alt"></i></a></td>
+                            <td :class='statusTextColor(order.status)'>{{order.status_stringify}}</td>
+                            <td class="text-center">{{order.paid_till_formated}} <span class="text-danger ml-1" v-if="!order.is_paied" title="Необходимо оплатить"><i class="fas fa-exclamation-triangle"></i></span></td>
+                            <td class="text-center">{{order.created_at}}</td>
 
                             <td style="text-align:center; vertical-align: middle;">
-                                <a class="btn btn-info" :href="`/platforms/page/${platform.id}`">
+                                <a class="btn btn-info" :href="`/orders/page/${order.id}`">
                                     <i class="fa fa-eye"></i>
                                 </a>
-                                <button class="btn btn-danger ml-1" @click="deleteRecord(index)" v-if='platform.can_delete'>
+                                <button class="btn btn-danger ml-1" @click="deleteRecord(index)" v-if='order.can_delete'>
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
@@ -71,11 +71,11 @@
                 </table>
             </div>
             <!-- /.card-body -->
-            <div class="card-footer" v-if='platforms.length >= limit'>
+            <div class="card-footer" v-if='orders.length >= limit'>
                 <div class="overflow-auto">
                     <pagination
                         class="mb-0"
-                        :data="platforms"
+                        :data="orders"
                         @pagination-change-page="getResults"
                         :limit="limit"
                         :show-disabled="showDisabled"
@@ -89,8 +89,8 @@
 
     <footer-block></footer-block>
 
-    <!-- Dialog Edit Platform -->
-    <div class="modal fade" id="editPlatform" tabindex="-1" role="dialog" aria-labelledby="editPlatformTitle" aria-hidden="true">
+    <!-- Dialog Edit Order -->
+    <div class="modal fade" id="editOrder" tabindex="-1" role="dialog" aria-labelledby="editOrderTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
             <div class="modal-header">
@@ -104,20 +104,20 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="name">Наименование рекламной площадки</label>
-                            <input type="text" required class="form-control" id="name" placeholder="Моя первая рекламная кампания" v-model="editPlatform.name">
+                            <input type="text" required class="form-control" id="name" placeholder="Моя первая рекламная кампания" v-model="editOrder.name">
                         </div>
                     </div><!-- .form-row -->
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="url">Адрес сайта (без слеша на конце и протоколом вначале)</label>
-                            <input type="text" required class="form-control" id="url" placeholder="https://domain.com" v-model="editPlatform.url">
+                            <input type="text" required class="form-control" id="url" placeholder="https://domain.com" v-model="editOrder.url">
                         </div>
                     </div><!-- .form-row -->
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-success" @click="createPlatform()">
+                <button type="button" class="btn btn-success" @click="createOrder()">
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="addingNew"></span>
                     Сохранить
                 </button>
@@ -125,19 +125,19 @@
             </div>
         </div>
     </div>
-    <!-- End: Dialog Edit Platform -->        
+    <!-- End: Dialog Edit Order -->        
 </div>        
 </template>
 
 <script>
-  import {API_GET_PLATFORMS, API_CRUD_PLATFORM} from '../API'
+  import {API_GET_ORDERS, API_CRUD_ORDER} from '../API'
 
   export default {
     components: {
     },
     data() {
       return {
-        platforms: {},
+        orders: {},
         limit: 10,
         showDisabled: false,
         size: 'default',
@@ -146,10 +146,10 @@
         addingNew: false,
         loadingTimer: 1000,
         search: "",
-        dialogES: '#editPlatform',
+        dialogES: '#editOrder',
         editIndex: -1,
-        defaultEditPlatform: {},
-        editPlatform: {
+        defaultEditOrder: {},
+        editOrder: {
             id: '',
             url: '', 
             name: '', 
@@ -178,21 +178,21 @@
         let self = this;
         $(this.dialogES).on('hidden.bs.modal', function (e) {self.close();});
 
-        // $('#allPlatforms').DataTable();
+        // $('#allorders').DataTable();
     },
     methods: {
         getResults(page = 1) {
             this.progress = 15;
-            axios.get(API_GET_PLATFORMS + '?page=' + page)
+            axios.get(API_GET_ORDERS + '?page=' + page)
                 .then(response => {
                     // console.log(response);
                     this.progress = 85;
                     setTimeout(() => {
                         this.progress = -1;
                     }, this.loadingTimer);
-                    this.platforms = response.data;
-                    this.platforms.data.forEach(platform => {
-                        platform.choice_edit = 0;
+                    this.orders = response.data;
+                    this.orders.data.forEach(order => {
+                        order.choice_edit = 0;
                     });
                 })
                 .catch(err => console.log(err.response.data))
@@ -207,9 +207,9 @@
                     setTimeout(() => {
                         this.progress = -1;
                     }, this.loadingTimer);
-                    this.platforms = response.data;
-                    this.platforms.data.forEach(platform => {
-                        platform.choice_edit = 0;
+                    this.orders = response.data;
+                    this.orders.data.forEach(order => {
+                        order.choice_edit = 0;
                     });    
                 })
                 .catch(err => console.log(err.response.data))
@@ -219,23 +219,23 @@
             this.progress = -1;
             $(this.dialogES).modal('hide');
 
-            this.editPlatform = Object.assign({}, this.defaultEditPlatform);
+            this.editOrder = Object.assign({}, this.defaultEditOrder);
 
             this.editIndex = -1;
         },      
-        newPlatform() {
+        newOrder() {
             $(this.dialogES).modal('show');
         },         
-        createPlatform() {
+        createOrder() {
             this.addingNew = true;
  
             axios
-                .post(API_CRUD_PLATFORM,
-                this.editPlatform)
+                .post(API_CRUD_ORDER,
+                this.editOrder)
                 .then(response => {
                     console.log("response", response.data);
-                    this.platforms.data.unshift(response.data);
-                    this.platforms.total++;
+                    this.orders.data.unshift(response.data);
+                    this.orders.total++;
                     this.close();
                 })
                 .catch(err => console.log(err.response))
@@ -244,10 +244,10 @@
         deleteRecord(index) {
             confirm('Вы уверены что хотите удалить эту платформу?') &&
             axios
-                .delete(API_CRUD_PLATFORM + '/' + this.platforms.data[index].id)
+                .delete(API_CRUD_ORDER + '/' + this.orders.data[index].id)
                 .then(res => {
-                    this.platforms.data.splice(index, 1);
-                    this.platforms.total--;
+                    this.orders.data.splice(index, 1);
+                    this.orders.total--;
                 })
                 .catch(err => console.log(err.response))
         },

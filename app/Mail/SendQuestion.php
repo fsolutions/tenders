@@ -33,7 +33,7 @@ class SendQuestion extends Mailable
      */
     public function build()
     {
-        return $this->from('refollower@yandex.ru')
+        return $this->from('info@gravescare.com')
             ->subject($this->title)
             ->view('emails.sendquestions');
         // ->with([

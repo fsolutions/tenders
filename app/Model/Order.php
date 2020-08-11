@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Platform
+ * Class Order
  *
  * @package App\Model
  */
-class Platform extends Model
+class Order extends Model
 {
   use SoftDeletes;
 
@@ -23,7 +23,7 @@ class Platform extends Model
    *
    * @var string
    */
-  protected $table = 'platforms';
+  protected $table = 'orders';
 
   /**
    * The database primary key value.
@@ -113,25 +113,5 @@ class Platform extends Model
   public function user()
   {
     return $this->belongsTo('App\User');
-  }
-
-  /**
-   * Has many mapping boxes
-   *
-   * @return \Illuminate\Database\Eloquent\Relations\hasMany
-   */
-  public function boxes()
-  {
-    return $this->hasMany('App\Model\Boxes', 'platform_id', 'id')->orderBy('index', 'asc');
-  }
-
-  /**
-   * Has many mapping refollowers
-   *
-   * @return \Illuminate\Database\Eloquent\Relations\hasMany
-   */
-  public function refollowers()
-  {
-    return $this->hasMany('App\Model\Refollowers', 'platform_id', 'id');
   }
 }

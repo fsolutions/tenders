@@ -16,7 +16,7 @@
 
   <p><em><b>С уважением</b>,<br>
       Автоматическая система<br>
-      сервиса Refollower.</em></p>
+      сервиса Gravescare Tenders.</em></p>
 
 </div>
 @stop

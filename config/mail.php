@@ -39,9 +39,9 @@ return [
             'host' => env('MAIL_HOST', 'smtp.yandex.ru'),
             'port' => env('MAIL_PORT', 587),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
-            'username' => env('MAIL_USERNAME', 'refollower@yandex.ru'),
-            'password' => env('MAIL_PASSWORD', 'asFN46Nkld%h'),
-            'from' => env('MAIL_FROM_NAME', 'Сервис Refollower'),
+            'username' => env('MAIL_USERNAME', 'info@gravescare.com'),
+            'password' => env('MAIL_PASSWORD', 'lbvf1278vbif'),
+            'from' => env('MAIL_FROM_NAME', 'Сервис Gravescare Tenders'),
             'timeout' => null,
         ],
 

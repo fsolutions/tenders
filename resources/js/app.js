@@ -27,14 +27,9 @@ import store from './store.js'
 Vue.component('pagination', require('laravel-vue-pagination'));
 // Vue.component('line-chart', require('./components/Chart.vue').default);
 Vue.component('home-component', require('./components/HomeComponent.vue').default);
-Vue.component('platforms', require('./components/PlatformComponent.vue').default);
-Vue.component('one-platform', require('./components/OnePlatformComponent.vue').default);
-Vue.component('footer-block', require('./components/platformcomponents/Footer.vue').default);
-Vue.component('kupons-popup', require('./components/platformcomponents/KuponsPopup.vue').default);
-Vue.component('kupons-list', require('./components/platformcomponents/KuponsList.vue').default);
-Vue.component('statistics-platform', require('./components/platformcomponents/Statistics.vue').default);
-Vue.component('payment-platform', require('./components/platformcomponents/PaymentCode.vue').default);
-Vue.component('widget-code', require('./components/platformcomponents/WidgetCode.vue').default);
+Vue.component('orders', require('./components/OrderComponent.vue').default);
+Vue.component('one-order', require('./components/OneOrderComponent.vue').default);
+Vue.component('footer-block', require('./components/Footer.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

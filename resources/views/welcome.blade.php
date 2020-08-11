@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Личный кабинет сервиса Refollower</title>
+    <title>Личный кабинет сервиса Gravescare Tenders</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -27,7 +27,7 @@
             <div id="formContent" style="margin-top: 70px;">
                 <!-- Icon -->
                 <div class="fadeIn first text-center py-4">
-                    <img src="/img/promo/logo.jpg" style="width: 100%; height: auto; max-width: 200px;" alt="Сервис Refollower">
+                    <img src="/img/promo/logo.jpg" style="width: 100%; height: auto; max-width: 200px;" alt="Сервис Gravescare Tenders">
                 </div>
 
                 @if (Route::has('login'))

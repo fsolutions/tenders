@@ -1,11 +1,11 @@
 <template>
-  <section class="mx-0 mx-md-5 mt-5 mb-1 platform__footer">
+  <section class="mx-0 mx-md-5 mt-5 mb-1 order__footer">
     <div class="row">
         <div class="col-sm-12 col-md-4 pt-2">
-            &copy; Refollower
+            &copy; Gravescare Tenders
         </div>
         <div class="col-sm-12 col-md-4 text-center">
-            <a href="/platforms/"><img src="/img/cabinet/logo_down_2.jpg" class="img-fluid" alt="Refollower"></a>
+            <!-- <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a> -->
         </div>
         <div class="col-sm-12 col-md-4 text-left text-md-right pt-2">
             <a href="#" class="plaform__footer__supportbtn" @click="newQuestion()">Поддержка</a>
@@ -56,10 +56,10 @@
         </div>
     </div>
     <!-- End: Dialog Send Message -->              
-  </section><!--/platform__box__settings-->
+  </section><!--/order__box__settings-->
 </template>
 <script>
-  import { API_POST_SEND_QUESTION } from '../../API'
+  import { API_POST_SEND_QUESTION } from '../API'
 
   export default {
     data() {

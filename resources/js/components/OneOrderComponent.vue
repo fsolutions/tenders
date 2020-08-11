@@ -1,18 +1,18 @@
 <template>
 <div class="container">
-	<div class="platform__header">
-		<div class="platform__header__bg"></div>
+	<div class="order__header">
+		<div class="order__header__bg"></div>
 
         <div class="openNavButton">
             <button class="btn btn-danger" onclick="openNav()"><i class="fas fa-bars bar"></i></button>
         </div>
         <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="/platforms">Мои площадки</a>
+            <a href="/orders">Мои площадки</a>
             <a :class="activeMenu=='main' ? 'active':''" @click="changeMenu('main')" href="#">Рекламная кампания</a>
             <a :class="activeMenu=='promo-codes' ? 'active':''" @click="changeMenu('promo-codes')" href="#">Промо-коды</a>
             <a :class="activeMenu=='statistics' ? 'active':''" @click="changeMenu('statistics')" href="#">Статистика</a>
-            <a :class="activeMenu=='payment' ? 'active':''" @click="changeMenu('payment')" href="#">Оплата <span class="text-danger ml-1" v-if="!platform.is_paied" title="Необходимо оплатить"><i class="fas fa-exclamation-triangle"></i></span></a>
+            <a :class="activeMenu=='payment' ? 'active':''" @click="changeMenu('payment')" href="#">Оплата <span class="text-danger ml-1" v-if="!order.is_paied" title="Необходимо оплатить"><i class="fas fa-exclamation-triangle"></i></span></a>
             <a :class="activeMenu=='widget' ? 'active':''" @click="changeMenu('widget')" href="#">Код виджета</a>
             <a href="#">Поддержка</a>
             <div class="productVersion">Версия 1.15</div>
@@ -21,54 +21,54 @@
         <div class="container px-5">
             <div class="row">
                 <div class="col-sm-12 col-md-3 text-center text-md-left pt-3 mt-0 pt-md-4 mt-md-2">
-                    <a href="/platforms/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Refollower"></a>
+                    <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a>
                 </div>
-                <div class="d-none d-md-block col-sm-12 col-md-6 platform__header__settings__mainblock">
-                    <div class="platform__header__settings">
-                        <div class="platform__header__openSettings" @click="openSettings()" v-if="!checkPlatformFullness">
+                <div class="d-none d-md-block col-sm-12 col-md-6 order__header__settings__mainblock">
+                    <div class="order__header__settings">
+                        <div class="order__header__openSettings" @click="openSettings()" v-if="!checkOrderFullness">
                             Настройте вашу кампанию 
                             <button class="btn btn-sm btn-danger btn-fly-top-right"><i class="fas fa-exclamation"></i></button>
                         </div>
-                        <div class="platform__header__openSettings good" @click="openSettings()" v-if="checkPlatformFullness">
+                        <div class="order__header__openSettings good" @click="openSettings()" v-if="checkOrderFullness">
                             Данные кампании заполнены
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-3 text-center text-md-right pt-2 mt-0 pt-md-3 mt-md-2">
-                    <div class="platform__header__info">ID площадки: {{platform.id}}</div>
+                    <div class="order__header__info">ID площадки: {{order.id}}</div>
                     <div>
                         <div class="custom-control custom-switch">
                             <input type="checkbox" 
                                     class="custom-control-input" 
                                     id="customSwitch1" 
-                                    :checked='platform.status' 
-                                    :disabled="!platform.is_paied" 
-                                    :title="platform.status==1 ? 'Оплачено до':'Не оплачено'"
+                                    :checked='order.status' 
+                                    :disabled="!order.is_paied" 
+                                    :title="order.status==1 ? 'Оплачено до':'Не оплачено'"
                                     @click='changeStatusNow()'>
-                            <label class="custom-control-label" for="customSwitch1" v-if="platform.status==1">до {{platform.paid_till_formated}}</label>
-                            <label class="custom-control-label" for="customSwitch1" v-if="platform.status==0">
-                                <span v-if="platform.status==0 && !platform.is_paied">{{platform.status_stringify}}</span>
-                                <span v-if="platform.status==0 && platform.is_paied">до {{platform.paid_till_formated}}</span>
+                            <label class="custom-control-label" for="customSwitch1" v-if="order.status==1">до {{order.paid_till_formated}}</label>
+                            <label class="custom-control-label" for="customSwitch1" v-if="order.status==0">
+                                <span v-if="order.status==0 && !order.is_paied">{{order.status_stringify}}</span>
+                                <span v-if="order.status==0 && order.is_paied">до {{order.paid_till_formated}}</span>
                             </label>
-                            <span class="head-payment" v-if="!platform.is_paied"><a @click="changeMenu('payment')" class="btn btn-light ml-1" href="#" title="Оплатить"><i class="fas fa-dollar-sign"></i></a></span>
+                            <span class="head-payment" v-if="!order.is_paied"><a @click="changeMenu('payment')" class="btn btn-light ml-1" href="#" title="Оплатить"><i class="fas fa-dollar-sign"></i></a></span>
                         </div>                    
                     </div>
                 </div>
             </div>
         </div><!--/container-->
-        <div class="platform__settings__formarea">
-            <div class="platform__settings__form">
+        <div class="order__settings__formarea">
+            <div class="order__settings__form">
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-12 col-md-6">
                             <div class="form-group">
-                                <input type="text" v-model="platform.name" class="form-control" placeholder="Успешная кампания #1">
+                                <input type="text" v-model="order.name" class="form-control" placeholder="Успешная кампания #1">
                                 <small class="form-text text-muted">Название кампании, его видите только вы.</small>
                             </div>
                         </div><!--/col-->
                         <div class="col-sm-12 col-md-6">
                             <div class="form-group">
-                                <input type="text" v-model="platform.url" class="form-control" placeholder="https://сайт.ru">
+                                <input type="text" v-model="order.url" class="form-control" placeholder="https://сайт.ru">
                                 <small class="form-text text-muted">Адрес сайта, для которого создается кампания</small>
                             </div>
                         </div><!--/col-->
@@ -76,7 +76,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
-                                <input type="text" v-model="platform.name_visible" class="form-control" placeholder="Скидка до 50% на новый велосипед!">
+                                <input type="text" v-model="order.name_visible" class="form-control" placeholder="Скидка до 50% на новый велосипед!">
                                 <small class="form-text text-muted">Название кампании, отоброжающееся для ваших посетителей</small>
                             </div>
                         </div><!--/col-->
@@ -84,7 +84,7 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-6">
                             <div class="form-group">
-                                <textarea v-model="platform.description" rows="6" class="form-control" placeholder=""></textarea>
+                                <textarea v-model="order.description" rows="6" class="form-control" placeholder=""></textarea>
                                 <small class="form-text text-muted">Описание сути и плюсов вашей реферальной кампании для посетителей сайта</small>
                             </div>
                         </div><!--/col-->
@@ -94,9 +94,9 @@
                                     <b class="text-white mr-2">Ограничить показ набором страниц</b> <button class="btn btn-sm btn-secondary" @click='addAdditionalURL()'>Добавить урл</button>
                                 </div>
                                 <div class="row">
-                                    <div v-for="(url, index) in platform.additional_urls" class="col-sm-12 col-md-6">
+                                    <div v-for="(url, index) in order.additional_urls" class="col-sm-12 col-md-6">
                                         <div class="form-inline row mb-2">
-                                            <input type="text" class="form-control form-control-sm col-sm-9 ml-3 mr-1" placeholder="/catalog.html или /catalog" v-model="platform.additional_urls[index]">
+                                            <input type="text" class="form-control form-control-sm col-sm-9 ml-3 mr-1" placeholder="/catalog.html или /catalog" v-model="order.additional_urls[index]">
                                             <button class="btn btn-sm btn-secondary col-sm-2" @click='deleteUrl(index)'><i class="fas fa-times"></i></button>
                                         </div>
                                     </div>
@@ -107,18 +107,18 @@
                     </div><!--/row-->
                     <div class="row">
                         <div class="col-sm-12 text-center">
-                            <button class="btn btn-success" @click='updatePlatform()'><i class="fas fa-spinner fa-spin mr-2" v-if="savingPlatform"></i>Сохранить настройки</button>
+                            <button class="btn btn-success" @click='updateOrder()'><i class="fas fa-spinner fa-spin mr-2" v-if="savingOrder"></i>Сохранить настройки</button>
                         </div>
                     </div><!--/row-->
                 </div>
-            </div><!--/platform__settings__form-->
+            </div><!--/order__settings__form-->
         </div>
-        <!--/platform__settings__formarea-->    
+        <!--/order__settings__formarea-->    
 
     </div>
-    <!--/platform__header-->
+    <!--/order__header-->
 
-    <section class="mb-3 platform__statistic" v-if="activeMenu=='main' || activeMenu=='statistics'">
+    <section class="mb-3 order__statistic" v-if="activeMenu=='main' || activeMenu=='statistics'">
         <div class="row">
             <div class="col-sm-12 text-left text-md-center">
                 <span class="d-inline-block my-2 mx-2"><span class="badge badge-pill badge-warning stat-pill mr-2"><i class="fas fa-spinner fa-spin" v-if="linksFollowedLoading"></i><span v-if="!linksFollowedLoading">{{statistics.linksFollowed}}</span></span> Переходов по ссылкам</span>
@@ -126,10 +126,10 @@
                 <span class="d-inline-block my-2 mx-2"><span class="badge badge-pill badge-info stat-pill mr-2">{{statistics.leftKupons}}</span> Промо-кодов осталось</span>
             </div>
         </div>
-    </section><!--/platform__statistic-->
+    </section><!--/order__statistic-->
 
     <section class="main" v-if="activeMenu=='main'">
-        <section class="mx-0 mx-md-5 mb-3 platform__box__settings">
+        <section class="mx-0 mx-md-5 mb-3 order__box__settings">
             <div class="row">
                 <div class="col-sm-12 col-md-6">
                     <div class="headUp text-muted">Настройка вознаграждений и условий</div>
@@ -139,18 +139,18 @@
             </div>
             <div class="row">
                 <div class="col-sm-12">
-                    <div class="text-center my-5" v-if="platform.boxes.length == 0">
-                        <button class="btn btn-success" @click='createDefaultBoxes(platform.id)'>Создать бонусные боксы</button>
+                    <div class="text-center my-5" v-if="order.boxes.length == 0">
+                        <button class="btn btn-success" @click='createDefaultBoxes(order.id)'>Создать бонусные боксы</button>
                     </div>
 
                     <kupons-popup
-                        :box='platform.boxes[selectedBoxId]'
+                        :box='order.boxes[selectedBoxId]'
                         @updateKuponsInBox='updateKuponsInBox'
                         @offKuponsPopup='offKuponsPopup' />                
 
-                    <template v-if="platform.boxes.length > 0">
+                    <template v-if="order.boxes.length > 0">
                         <div class="ref-row" style="margin: 15px 0 auto; width: 100%;">
-                            <div v-for="(box, index) in platform.boxes" :key="box.id"
+                            <div v-for="(box, index) in order.boxes" :key="box.id"
                                     :class="`ref-row-item ref-row-item-${box.index} ref-c3`" style="opacity:1;">
                                 <div class="ref-row-box" style="padding-top: 20px;">
                                     <div class="ref-box-image"></div>
@@ -219,31 +219,31 @@
                     </template>
                 </div>
             </div>
-        </section><!--/platform__box__settings-->
+        </section><!--/order__box__settings-->
     </section><!--/main-->
 
     <section class="promo-codes mx-5" v-if="activeMenu=='promo-codes'">
         <kupons-list
-            :platform='platform'
-            @updatePlatformEmit='updatePlatformEmit'
+            :order='order'
+            @updateOrderEmit='updateOrderEmit'
         ></kupons-list>
     </section><!--/promo-codes-->
 
     <section class="statistics mx-5" v-if="activeMenu=='statistics'">
-        <statistics-platform
-            :platform='platform'
-        ></statistics-platform>
+        <statistics-order
+            :order='order'
+        ></statistics-order>
     </section><!--/statistics-->
 
     <section class="payment mx-5" v-if="activeMenu=='payment'">
-        <payment-platform 
-            :id='platform.id'
-        ></payment-platform>
-    </section><!--/payment-platform-->
+        <payment-order 
+            :id='order.id'
+        ></payment-order>
+    </section><!--/payment-order-->
 
     <section class="widget mx-5" v-if="activeMenu=='widget'">
         <widget-code 
-            :id='platform.id'
+            :id='order.id'
         ></widget-code>
     </section><!--/widget-->
 
@@ -252,10 +252,10 @@
     <!-- <div class="card"> -->
         <!-- <div class="card-header">
             <div class="row">
-                <div class="col-auto"><a href="/platforms" class="btn btn-sm btn-secondary">&laquo; Назад</a></div>
-                <div class="col-auto pt-1"><h5>Площадка #{{platform.id}}</h5></div>
+                <div class="col-auto"><a href="/orders" class="btn btn-sm btn-secondary">&laquo; Назад</a></div>
+                <div class="col-auto pt-1"><h5>Площадка #{{order.id}}</h5></div>
                 <div class="col text-right">
-                    <button class="btn btn-sm btn-secondary" @click="reloadPlatform(platform.id)">
+                    <button class="btn btn-sm btn-secondary" @click="reloadOrder(order.id)">
                         <i class="fas fa-sync-alt" v-if="!reloading"></i>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="reloading"></span>
                     </button>
@@ -267,7 +267,7 @@
             <div class="overflow-auto">
                 <pagination
                     class="mb-0"
-                    :data="platforms"
+                    :data="orders"
                     @pagination-change-page="getResults"
                     :limit="limit"
                     :show-disabled="showDisabled"
@@ -280,11 +280,11 @@
 </template>
 
 <script>
-  import { API_CRUD_PLATFORM, API_BOXES_RESOURCE, API_GET_STAT_NUMBERS } from '../API'
+  import { API_CRUD_ORDER } from '../API'
 
   const initialBoxItem = () => ({
     id: '',
-    platform_id: '',
+    order_id: '',
     index: '',
     grad: '',
     way: '',
@@ -299,14 +299,14 @@
     components: {
     },
     props: {
-        importedPlatform: {
+        importedOrder: {
         type: Object,
         required: true
         }
     },    
     data() {
       return {
-        platform: {
+        order: {
             id: '',
             url: '', 
             name: '', 
@@ -323,7 +323,7 @@
             boxes: [],
             followers: []
         },
-        savingPlatform: false,
+        savingOrder: false,
         activeMenu: "main",
         limit: 10,
         showDisabled: false,
@@ -333,7 +333,7 @@
         reloading: false,
         loadingTimer: 1000,
         search: "",
-        checkPlatformFullness: false,
+        checkOrderFullness: false,
         linksFollowedLoading: true,
         openedKuponsLoading: true,
         editedBox: initialBoxItem(),
@@ -371,9 +371,9 @@
       }
     },
     watch: {
-        platform: {
+        order: {
             handler() {
-                this.checkPlatformFullness = this.platformFullness();
+                this.checkOrderFullness = this.orderFullness();
                 this.countLeftKupons();
             },
             deep: true,
@@ -386,69 +386,69 @@
       // },
     },
     created() {
-        this.platform = Object.assign(this.platform, this.importedPlatform);
+        this.order = Object.assign(this.order, this.importedOrder);
 
-        if (this.platformFullness() === false) {
+        if (this.orderFullness() === false) {
             this.openSettings();
         }
 
-        console.log("platform", this.platform);
+        console.log("order", this.order);
 
         this.loadStatistics();
     },
     methods: {
-        platformFullness() {
-            if (!this.platform.url || !this.platform.name || !this.platform.name_visible || !this.platform.description) {
+        orderFullness() {
+            if (!this.order.url || !this.order.name || !this.order.name_visible || !this.order.description) {
                 return false;
             } 
 
             return true;
         },
         openSettings() {
-            $('.platform__settings__formarea').toggleClass('hidden');
+            $('.order__settings__formarea').toggleClass('hidden');
         },
         getResults(page = 1) {
             // this.progress = 15;
-            // axios.get(API_GET_PLATFORMS + '?page=' + page)
+            // axios.get(API_GET_orders + '?page=' + page)
             //   .then(response => {
             //       // console.log(response);
             //       this.progress = 85;
             //       setTimeout(() => {
             //           this.progress = -1;
             //       }, this.loadingTimer);
-            //       this.platforms = response.data;
-            //       this.platforms.data.forEach(site => {
+            //       this.orders = response.data;
+            //       this.orders.data.forEach(site => {
             //           site.choice_edit = 0;
             //       });
             //   })
             //   .catch(err => console.log(err.response.data))
             //   .finally(() => (this.progress = -1));
         },
-        reloadPlatform(platformId) {
+        reloadOrder(orderId) {
             this.reloading = true;
-            axios.get(API_CRUD_PLATFORM + '/' + platformId)
+            axios.get(API_CRUD_ORDER + '/' + orderId)
                 .then(response => {
-                    this.platform = response.data;
+                    this.order = response.data;
                     this.loadStatistics();
                 })
                 .catch(err => console.log(err.response.data))
                 .finally(() => (this.reloading = false));
         },
         changeStatusNow() {
-            this.savingPlatform = true;
-            let newPlatformStatus = (this.platform.status==1 ? 0:1);
+            this.savingOrder = true;
+            let neworderstatus = (this.order.status==1 ? 0:1);
 
             axios
-                .put(API_CRUD_PLATFORM + '/' + this.platform.id,
+                .put(API_CRUD_ORDER + '/' + this.order.id,
                 {
-                    'status': newPlatformStatus,
-                    'url': this.platform.url
+                    'status': neworderstatus,
+                    'url': this.order.url
                 })
                 .then(response => {
-                    this.platform.status = response.data.status;
+                    this.order.status = response.data.status;
                 })
                 .catch(err => console.log(err.response))
-                .finally(() => (this.savingPlatform = false))            
+                .finally(() => (this.savingOrder = false))            
         },
 
         offKuponsPopup() {
@@ -459,16 +459,16 @@
             $(this.dialogKupons).modal('show');
         },
         updateKuponsInBox(kupons) {
-            this.platform.boxes[this.selectedBoxId].kupons = kupons;
+            this.order.boxes[this.selectedBoxId].kupons = kupons;
             // this.offKuponsPopup();
             this.checkBoxesOnKupons();
         },
-        updatePlatformEmit(platform) {
-            this.platform = Object.assign(this.platform, platform);
+        updateOrderEmit(order) {
+            this.order = Object.assign(this.order, order);
             this.checkBoxesOnKupons();
         },
         checkBoxesOnKupons() {
-            this.platform.boxes.forEach(box => {
+            this.order.boxes.forEach(box => {
                 let kuponSumOfCount = 0;
                 box.nokupons = true;
                 box.kupons.forEach(kupon => {
@@ -499,12 +499,12 @@
         },
         openBox(boxIndex, objName) {
             this.closeAllEditors();
-            this.editedBox = Object.assign({}, this.platform.boxes[boxIndex]);
+            this.editedBox = Object.assign({}, this.order.boxes[boxIndex]);
             this[objName][boxIndex] = true;
         },
         saveBox(boxIndex, objName) {
             this.saveBtnToggler();
-            const box = this.platform.boxes[boxIndex];
+            const box = this.order.boxes[boxIndex];
             axios.put(API_BOXES_RESOURCE + '/' + box.id, box)
                 .then(response => {
                     this.editedBox = initialBoxItem();
@@ -515,60 +515,60 @@
                 .catch(err => console.log(err.response.data))
         },
         cancelBoxEdit(boxIndex, objName) {
-            this.platform.boxes[boxIndex] = Object.assign(this.platform.boxes[boxIndex], this.editedBox);
+            this.order.boxes[boxIndex] = Object.assign(this.order.boxes[boxIndex], this.editedBox);
             this.editedBox = initialBoxItem();
             this[objName][boxIndex] = false;
         },
-        createDefaultBoxes(platformId) {
+        createDefaultBoxes(orderId) {
             this.progress = 15;
-            axios.get(API_CRUD_PLATFORM + '/' + platformId)
+            axios.get(API_CRUD_ORDER + '/' + orderId)
                 .then(response => {
                     this.progress = 85;
-                    this.platform.boxes = response.data;
+                    this.order.boxes = response.data;
                 })
                 .catch(err => console.log(err.response.data))
                 .finally(() => (this.progress = -1));
         },
         addAdditionalURL(index) {
-            if (!this.platform.additional_urls) {
-                this.platform.additional_urls = [];
+            if (!this.order.additional_urls) {
+                this.order.additional_urls = [];
             }
-            this.platform.additional_urls.push("");
+            this.order.additional_urls.push("");
         },
         deleteUrl(index) {
-            this.platform.additional_urls.splice(index, 1);
+            this.order.additional_urls.splice(index, 1);
         },
-        updatePlatform() {
-            this.savingPlatform = true;
+        updateOrder() {
+            this.savingOrder = true;
 
-            if (!this.platform.additional_urls) {
-                this.platform.additional_urls = [];
+            if (!this.order.additional_urls) {
+                this.order.additional_urls = [];
             }
 
-            this.platform.additional_urls.forEach((url,index) => {
+            this.order.additional_urls.forEach((url,index) => {
                 if (!url) {
-                    this.platform.additional_urls.splice(index, 1);
+                    this.order.additional_urls.splice(index, 1);
                 }
             });
 
             axios
-                .put(API_CRUD_PLATFORM + '/' + this.platform.id,
-                this.platform)
+                .put(API_CRUD_ORDER + '/' + this.order.id,
+                this.order)
                 .then(response => {
-                    if (this.platformFullness() === false) {
+                    if (this.orderFullness() === false) {
                         this.openSettings();
                     }                    
                 })
                 .catch(err => console.log(err.response))
-                .finally(() => (this.savingPlatform = false))
+                .finally(() => (this.savingOrder = false))
         },        
         deleteRecord(index) {
             confirm('Вы уверены что хотите удалить эту строку?') &&
             axios
-                .delete('/site/' + this.platforms.data[index].id)
+                .delete('/site/' + this.orders.data[index].id)
                 .then(res => {
-                this.platforms.data.splice(index, 1)
-                this.platforms.total--
+                this.orders.data.splice(index, 1)
+                this.orders.total--
                 })
                 .catch(err => console.log(err.response))
                 .finally(() => (this.loading = false))
@@ -579,7 +579,7 @@
         countLeftKupons() {
             this.statistics.leftKupons = 0;
 
-            this.platform.boxes.forEach(box => {
+            this.order.boxes.forEach(box => {
                 box.kupons.forEach(kupon => {
                     this.statistics.leftKupons += parseInt(kupon.count);
                 });
@@ -593,7 +593,7 @@
             this.linksFollowedLoading = true;
             this.openedKuponsLoading = true;
 
-            axios.get(API_GET_STAT_NUMBERS + '/' + this.platform.id)
+            axios.get(API_GET_STAT_NUMBERS + '/' + this.order.id)
                 .then(response => {
                     this.statistics.linksFollowed = parseInt(response.data.linksFollowed);
                     this.statistics.openedKupons = parseInt(response.data.openedKupons);
