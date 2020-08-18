@@ -11,7 +11,7 @@
   <div style="width: 100%; background-color:#f2f2f2;">
 
     <p style="padding:40px 25px 20px 25px;text-align:center">
-      <img src="/img/promo/logo.jpg" style="width: 100%; height: auto; max-width: 280px;" alt="Сервис Gravescare">
+      <img src="//tenders.gravescare.com/img/promo/logo.jpg" style="width: 100%; height: auto; max-width: 280px;" alt="Сервис Gravescare">
     </p>
 
     <div style="width: 90%; background-color: #232323; padding: 25px 5%;">

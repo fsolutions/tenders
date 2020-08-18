@@ -2,14 +2,25 @@
 
 namespace App\Http\Controllers\API;
 
+use App\User;
 use DateTime;
 use Validator;
 use App\Model\Order;
+use App\Mail\SendReaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+    /**
+     * userId
+     *
+     * @var void
+     */
+    public $userId;
+
     /**
      * Display a listing of the resource.
      *
@@ -21,28 +32,50 @@ class OrderController extends Controller
     }
 
     /**
+     * @TODO Remove from here to constructor maybe
+     *
+     * @return void
+     */
+    public function checkUserId()
+    {
+        $this->userId = NULL;
+
+        if (Auth::check()) {
+            $this->userId = Auth::user()->id;
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function list()
     {
+        $this->checkUserId();
+
         $per_page = empty(request('per_page')) ? 10 : (int) request('per_page');
 
-        if ($this->userId != 1) {
-            $orders = Order::where("user_id", $this->userId)->latest()->paginate($per_page);
-        } else {
-            $orders = Order::latest()->paginate($per_page);
+        $orders = Order::orderBy('updatetime', 'DESC')->paginate($per_page);
+        $orders->load(['city', 'graveyard', 'react:id']);
+
+        foreach ($orders as $index => $order) {
+            foreach ($order->react as $react) {
+                $order->reacted = false;
+                if ($react->id == $this->userId) {
+                    $order->reacted = true;
+                }
+            }
         }
 
-        $nowDate = new DateTime();
-        foreach ($orders as $id => $order) {
-            $paidTill = new DateTime($order->paid_till);
-            $intervalDiff = $nowDate->diff($paidTill);
-            $order->is_paied = true;
-            if ((int) $intervalDiff->format('%R%a') < 0 || $order->paid_till == null) {
-                $order->is_paied = false;
-            }
+        if (Auth::user() && Auth::user()->hasRole('administrator')) {
+            $orders->data = $orders->makeVisible([
+                'user_web_users_id',
+                'user_web_users_name',
+                'user_web_users_phone',
+                'user_web_users_email',
+            ]);
+            //  Or, $this->setVisible(['example_key']), if this works better for you.
         }
 
         return $orders;
@@ -57,7 +90,27 @@ class OrderController extends Controller
      */
     public function showPage($id)
     {
+        $this->checkUserId();
+
         $order = Order::findOrFail($id);
+
+        $order->load(['city', 'graveyard', 'react:id']);
+
+        foreach ($order->react as $react) {
+            $order->reacted = false;
+            if ($react->id == $this->userId) {
+                $order->reacted = true;
+            }
+        }
+
+        if (Auth::user() && Auth::user()->hasRole('administrator')) {
+            $order = $order->makeVisible([
+                'user_web_users_id',
+                'user_web_users_name',
+                'user_web_users_phone',
+                'user_web_users_email',
+            ]);
+        }
 
         return view('orders.order', ['data' => $order]);
     }
@@ -136,5 +189,48 @@ class OrderController extends Controller
         $order = Order::destroy($id);
 
         return $order;
+    }
+
+    /**
+     * Send reaction message to support
+     *
+     * @param  int  $id order_id
+     *
+     * @return bool
+     */
+    public function sendReaction($id)
+    {
+        $this->checkUserId();
+
+        $order = Order::find($id);
+        $order = $order->makeVisible([
+            'user_web_users_id',
+            'user_web_users_name',
+            'user_web_users_phone',
+            'user_web_users_email',
+        ]);
+
+        Auth::user()->react()->attach($order->id);
+
+        $userToSend = [
+            'id' => 'Новый пользователь',
+            'name' => 'Новый пользователь',
+            'email' => 'Новый пользователь',
+            'phone' => 'Новый пользователь'
+        ];
+
+        if ($this->userId != NULL) {
+            $user = User::find($this->userId);
+            $userToSend = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone
+            ];
+        }
+
+        Mail::to("info@gravescare.com")->send(new SendReaction($order, $userToSend, 'Отклик на заказ #' . $order->id));
+
+        return true;
     }
 }

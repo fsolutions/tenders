@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-0 mx-md-5 mt-5 mb-1 order__footer">
+  <section class="mt-5 mb-1 order__footer">
     <div class="row">
         <div class="col-sm-12 col-md-4 pt-2">
             &copy; Gravescare Tenders
@@ -8,7 +8,7 @@
             <!-- <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a> -->
         </div>
         <div class="col-sm-12 col-md-4 text-left text-md-right pt-2">
-            <a href="#" class="plaform__footer__supportbtn" @click="newQuestion()">Поддержка</a>
+            <a href="#" class="order__footer__supportbtn" id="footerSupport" @click="newQuestion()">Поддержка</a>
         </div>
     </div>
 
@@ -78,6 +78,15 @@
     mounted () {
       let self = this;
       $(this.dialogES).on('hidden.bs.modal', function (e) {self.close();});
+
+      const askButton = document.querySelectorAll('.askUsNow');
+
+      askButton[0].addEventListener('click', event => {
+          event.preventDefault();
+
+          var elem = document.getElementById('footerSupport');
+          this.triggerEvent(elem, 'click');
+      });
     },
     methods: {
       close() {
@@ -98,7 +107,12 @@
             })
             .catch(err => console.log(err.response.data))
             .finally(() => (this.sendingQuestion = false));        
-      }  
+      },
+      triggerEvent(elem, event) {
+          console.log("2");
+          var clickEvent = new Event(event); // Create the event.
+          elem.dispatchEvent(clickEvent); // Dispatch the event.
+      }
     },
   }
 </script>

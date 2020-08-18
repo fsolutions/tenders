@@ -1,30 +1,9 @@
 <template>
 <div class="container">
-	<div class="order__header">
-		<div class="order__header__bg"></div>
-
-        <div class="container px-5">
-            <div class="row">
-                <div class="col-sm-12 col-md-3 text-center text-md-left pt-3 mt-0 pt-md-4 mt-md-2">
-                    <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a>
-                </div>
-                <div class="d-none d-md-block col-sm-12 col-md-6 order__header__settings__mainblock">
-                </div>
-                <div class="col-sm-12 col-md-3 text-center text-md-right pt-4 mt-1">
-                    <button class="btn btn-success" @click="newOrder()">
-                        Новая площадка <i class="far fa-plus-square ml-1"></i>
-                    </button>
-                </div>
-            </div>
-        </div><!--/container-->
-
-    </div>
-    <!--/order__header-->  
-
-    <section class="mx-5">
-        <div class="row my-3">
+    <section>
+        <div class="row mt-5 mb-4">
             <div class="col-sm-12 col-md-6">
-                <div class="headUp text-muted">Мои площадки</div>
+                <div class="headUp">Каталог тендеров</div>
             </div>
             <div class="col-sm-12 col-md-6"></div>
         </div>
@@ -34,22 +13,100 @@
                 <div class="progress" v-if="progress != -1">
                     <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" :style="`width: ${progress}%`"></div>
                 </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
 
-                <table class="table table-striped table-hover table-borderless table-kupon mb-0">
-                    <thead>
-                        <tr>
-                            <th class="text-center">ID</th>
-                            <th>Наименование</th>
-                            <th>URL</th>
-                            <th class="text-center">Статус</th>
-                            <th class="text-center">Активна до</th>
-                            <th class="text-center">Создана</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+        <div class="card mb-3" v-for="(order, index)  in orders.data" :key="order.id">
+            <div class="card-body">
+                <div class="card-title">
+                    <div :class="`tendercart-type__status-public ${order.status_cssclass}`" :id="`${order.id}`">{{order.status_stringify}}</div>
+                    <div class="orderid__item-settings">
+					    <span class="reference _public">Заказ #{{order.id}}</span>
+					</div>                    
+                    <div class="b-tender__block--title">
+                        <div class="b-tender__title _wide">
+                            <!-- <a :href="`/orders/page/${order.id}`">{{order.tarif_stringify}}</a> -->
+                            <span>{{order.tarif_stringify}}</span>
+                        </div>
+                    </div>
 
-                    <tbody>
-                        <tr v-for="(order, index)  in orders.data" :key="order.id">
+                    <div class="b-tender__info mt-4" v-if="order.user_web_users_name || order.user_web_users_phone || order.user_web_users_email" style="border: 1px solid #ff0000; padding: 20px;">
+                        <div class="b-tender__info-item" v-if="order.user_web_users_name">
+                            <div class="b-tender__info-item-title">Имя заказчика:</div>
+                            <div class="b-tender__info-item-text">{{order.user_web_users_name}}</div>
+                        </div>
+                        <div class="b-tender__info-item" v-if="order.user_web_users_phone">
+                            <div class="b-tender__info-item-title">Телефон заказчика:</div>
+                            <div class="b-tender__info-item-text">{{order.user_web_users_phone}}</div>
+                        </div>
+                        <div class="b-tender__info-item" v-if="order.user_web_users_email">
+                            <div class="b-tender__info-item-title">Почта заказчика:</div>
+                            <div class="b-tender__info-item-text">{{order.user_web_users_email}}</div>
+                        </div>
+				    </div>                    
+
+                    <div class="row mt-4">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="b-tender__info-item-subtitle">Состав заказа</div>
+                            <div v-html="order.ordertxt_stringify"></div>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <div v-if="order.tarif == 'extended' || order.tarif == 'easy'">
+                                <div class="b-tender__info-item-subtitle">Количество могил<br>в заказе</div>
+                                <div class="b-tender__info-item-text">{{order.number_of_graves}}</div>
+                            </div>
+                            <div v-if="order.order_text_details">
+                                <div class="b-tender__info-item-subtitle">Комментарий клиента</div>
+                                <p>{{order.order_text_details}}</p>
+                            </div>
+                        </div>                        
+                    </div>
+
+                    <div class="b-tender__info mt-4">
+                        <div class="b-tender__info-item" v-if="order.city.pagetitle">
+                            <div class="b-tender__info-item-title">Город:</div>
+                            <div class="b-tender__info-item-text">{{order.city.pagetitle}}</div>
+                        </div>
+                        <div class="b-tender__info-item" v-if="order.virtual.graveyard_name">
+                            <div class="b-tender__info-item-title">Кладбище:</div>
+                            <div class="b-tender__info-item-text">{{order.virtual.graveyard_name}}</div>
+                            <!-- <small class="text-muted" v-if="order.virtual.map" @click="openOrderOnMap(index)"><i class="fas fa-map-marked-alt"></i> открыть на карте</small> -->
+                        </div>
+					    <div class="b-tender__info-item">
+							<div class="b-tender__info-item-title">Опубликован</div>
+							<div class="b-tender__info-item-text">{{order.updatetime}}</div>
+                            <small class="text-muted">время по Москве</small>
+						</div>
+                        <div class="b-tender__info-item">
+                            <div class="b-tender__info-item-title">Бюджет:</div>
+                            <div class="b-tender__info-item-text">от {{order.itogsum}}&nbsp;<span class="rub _bold"></span></div>
+                            <small class="text-muted">по согласованию</small>
+                        </div>
+				    </div>                    
+                </div>
+                <div class="card-text mb-3">
+                    <small class="text-muted" v-if="!order.can_access">Контакт для связи с заказчиком доступен только зарегистрированным пользователям.</small>
+                </div>
+                <div class="text-center text-md-left mb-3" v-if="order.can_delete">
+                    Смена статусов: 
+                    <button @click="changeStatus(index, 3)" class="btn btn-sm btn-secondary mb-2" v-if="order.status != 3"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Вернуть прием заявок</button>
+                    <button @click="changeStatus(index, 4)" class="btn btn-sm btn-info mb-2" v-if="order.status != 4"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Исполнитель выбран!</button>
+                    <button @click="changeStatus(index, 9)" class="btn btn-sm btn-success mb-2" v-if="order.status != 9"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Заказ успешно завершен!</button>
+                    <button @click="changeStatus(index, 'canceled')" class="btn btn-sm btn-danger mb-2" v-if="order.status != 'canceled'"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Заказ отменен</button>
+                </div>
+                <div class="text-center text-md-left" v-if="order.reacted && order.can_access">
+                    <button disabled class="btn btn-sm btn-success">Вы уже откликнулись!</button>
+                </div>
+                <div class="text-center text-md-left" v-if="!order.reacted && order.can_access && order.status == 3">
+                    <button @click="reactNow(index)" class="btn btn-success"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Откликнуться на заказ</button>
+                </div>
+                <div class="text-center text-md-left" v-if="!order.can_access && order.status == 3">
+                    <a href="/register" class="btn btn-success mb-2 mx-2">Зарегистрироваться и откликнуться!</a> или <a href="/" class="btn btn-primary mb-2 mx-2">Войти и откликнуться!</a>
+                </div>
+            </div>
+        </div>                
+                        <!-- <tr v-for="(order, index)  in orders.data" :key="order.id">
 
                             <td class="text-center">{{order.id}}</td>
                             <td><b><a :href="`/orders/page/${order.id}`">{{order.name}}</a></b></td>
@@ -66,12 +123,10 @@
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer" v-if='orders.length >= limit'>
+                        </tr> -->
+
+        <div class="card nobrd">
+            <div class="card-footer">
                 <div class="overflow-auto">
                     <pagination
                         class="mb-0"
@@ -91,36 +146,29 @@
 
     <!-- Dialog Edit Order -->
     <div class="modal fade" id="editOrder" tabindex="-1" role="dialog" aria-labelledby="editOrderTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Создание новой площадки</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">Заказ №{{editOrder.id}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form class="needs-validation" id="settingForm" novalidate>
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="name">Наименование рекламной площадки</label>
-                            <input type="text" required class="form-control" id="name" placeholder="Моя первая рекламная кампания" v-model="editOrder.name">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div style="width: 100%; height: 400px;">
+                            <div id="yandex-map-order" style="width: 100%; height: 400px;" class="yandex-map ltr" data-lang="ru_RU"></div>
                         </div>
-                    </div><!-- .form-row -->
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="url">Адрес сайта (без слеша на конце и протоколом вначале)</label>
-                            <input type="text" required class="form-control" id="url" placeholder="https://domain.com" v-model="editOrder.url">
-                        </div>
-                    </div><!-- .form-row -->
-                </form>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                <button type="button" class="btn btn-success" @click="createOrder()">
+                <!-- <button type="button" class="btn btn-success" @click="createOrder()">
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="addingNew"></span>
                     Сохранить
-                </button>
+                </button> -->
             </div>
             </div>
         </div>
@@ -130,7 +178,7 @@
 </template>
 
 <script>
-  import {API_GET_ORDERS, API_CRUD_ORDER} from '../API'
+  import {API_GET_ORDERS, API_CRUD_ORDER, API_SEND_ORDER_REACTION} from '../API'
 
   export default {
     components: {
@@ -146,23 +194,37 @@
         addingNew: false,
         loadingTimer: 1000,
         search: "",
-        dialogES: '#editOrder',
+        dialogEO: '#editOrder',
         editIndex: -1,
         defaultEditOrder: {},
+        mapOrder: '',
+        placemark: '',
         editOrder: {
             id: '',
-            url: '', 
-            name: '', 
-            name_visible: '', 
-            description: '', 
-            additional_urls: '',
-            is_paied: '',
-            user_id: '', 
+            ordertxt_stringify: '',
+            order_city_id: '', 
+            order_object_id: '', 
+            order_object_name_ext: '', 
+            order_text_details: '', 
+            city: {},
+            graveyard: {},
+            number_of_graves: '',
+            itogsum: '',
+            tarif: '',
+            tarif_stringify: '',
             status: '', 
-            paid_till: '',
-            paid_till_formated: '', 
-            status_stringify: '', 
-            can_delete: ''
+            status_stringify: '',
+            status_cssclass: '',
+            can_access: false,
+            reacted: false,
+            react: [],
+            can_delete: false,
+            virtual: {
+                graveyard_name: '',
+                choice_edit: 0,
+                reaction: false,
+                map: false,
+            }
         },        
       }
     },
@@ -176,9 +238,10 @@
       this.getResults();
 
         let self = this;
-        $(this.dialogES).on('hidden.bs.modal', function (e) {self.close();});
+        $(this.dialogEO).on('hidden.bs.modal', function (e) {self.close();});
 
-        // $('#allorders').DataTable();
+    },
+    created() {
     },
     methods: {
         getResults(page = 1) {
@@ -191,8 +254,26 @@
                         this.progress = -1;
                     }, this.loadingTimer);
                     this.orders = response.data;
-                    this.orders.data.forEach(order => {
-                        order.choice_edit = 0;
+                    this.orders.data.forEach((order, index) => {
+                        this.$set(this.orders.data[index], 'virtual', {});
+                        this.$set(this.orders.data[index].virtual, 'reaction', false);
+                        this.$set(this.orders.data[index].virtual, 'choice_edit', 0);
+                        this.$set(this.orders.data[index].virtual, 'graveyard_name', "");
+                        this.$set(this.orders.data[index].virtual, 'map', false);
+                        this.$set(this.orders.data[index].virtual, 'grave_lat', '');
+                        this.$set(this.orders.data[index].virtual, 'grave_long', '');
+                        if (!order.order_object_name_ext && order.graveyard) {
+                            order.virtual.graveyard_name = order.graveyard.pagetitle;
+                        } else if (order.order_object_name_ext) {
+                            order.virtual.graveyard_name = order.order_object_name_ext;
+                        }
+
+                        if (order.graveyard && order.graveyard.introtext) {
+                            let coords = order.graveyard.introtext.split(",");
+                            this.orders.data[index].virtual.map = true;
+                            this.orders.data[index].virtual.grave_lat = coords[0];
+                            this.orders.data[index].virtual.grave_long = coords[1];
+                        }
                     });
                 })
                 .catch(err => console.log(err.response.data))
@@ -208,8 +289,26 @@
                         this.progress = -1;
                     }, this.loadingTimer);
                     this.orders = response.data;
-                    this.orders.data.forEach(order => {
-                        order.choice_edit = 0;
+                    this.orders.data.forEach((order,index) => {
+                        this.$set(this.orders.data[index], 'virtual', {});
+                        this.$set(this.orders.data[index].virtual, 'reaction', false);
+                        this.$set(this.orders.data[index].virtual, 'choice_edit', 0);
+                        this.$set(this.orders.data[index].virtual, 'graveyard_name', "");
+                        this.$set(this.orders.data[index].virtual, 'map', false);
+                        this.$set(this.orders.data[index].virtual, 'grave_lat', '');
+                        this.$set(this.orders.data[index].virtual, 'grave_long', '');
+                        if (!order.order_object_name_ext && order.graveyard) {
+                            order.virtual.graveyard_name = order.graveyard.pagetitle;
+                        } else if (order.order_object_name_ext) {
+                            order.virtual.graveyard_name = order.order_object_name_ext;
+                        }
+
+                        if (order.graveyard && order.graveyard.introtext) {
+                            let coords = order.graveyard.introtext.split(",");
+                            this.orders.data[index].virtual.map = true;
+                            this.orders.data[index].virtual.grave_lat = coords[0];
+                            this.orders.data[index].virtual.grave_long = coords[1];
+                        }
                     });    
                 })
                 .catch(err => console.log(err.response.data))
@@ -217,14 +316,14 @@
         },
         close() {
             this.progress = -1;
-            $(this.dialogES).modal('hide');
+            $(this.dialogEO).modal('hide');
 
             this.editOrder = Object.assign({}, this.defaultEditOrder);
 
             this.editIndex = -1;
         },      
         newOrder() {
-            $(this.dialogES).modal('show');
+            $(this.dialogEO).modal('show');
         },         
         createOrder() {
             this.addingNew = true;
@@ -251,19 +350,71 @@
                 })
                 .catch(err => console.log(err.response))
         },
-        statusTextColor(status) {
-            let color;
-            switch (status) {
-                case 1:
-                    color = "text-green"; 
-                    break;
-                default:
-                    color = "text-danger"; 
-                    break;
-            }
+        reactNow(index) {
+            this.orders.data[index].virtual.reaction = true;
 
-            return "text-center " + color;
-        }        
+            axios
+                .get(API_SEND_ORDER_REACTION + '/' + this.orders.data[index].id)
+                .then(response => {
+                    this.orders.data[index].reacted = true;
+                    this.orders.data[index].virtual.reaction = false;
+                })
+                .catch(err => console.log(err.response))
+                .finally(() => (this.orders.data[index].reacted = true))
+
+        },
+        changeStatus(index, newStatus) {
+            this.orders.data[index].virtual.reaction = true;
+
+            axios
+                .put(API_CRUD_ORDER + '/' + this.orders.data[index].id, {
+                    "status": newStatus
+                })
+                .then(response => {
+                    this.orders.data[index].status = newStatus;
+                    this.orders.data[index].virtual.reaction = false;
+                    this.orders.data[index].status = response.data.status;
+                    this.orders.data[index].status_cssclass = response.data.status_cssclass;
+                    this.orders.data[index].status_stringify = response.data.status_stringify;
+                })
+                .catch(err => console.log(err.response))
+
+        },
+        openOrderOnMap(index) {
+            this.editOrder = Object.assign({}, this.orders.data[index]);
+            $(this.dialogEO).modal('show');
+
+            $(this.dialogEO).on('shown.bs.modal', function() {
+                this.mapOrder.container.fitToViewport();
+                // this.placemark.geometry.setCoordinates([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long]);
+                // this.mapOrder.setCenter(new YMaps.GeoPoint([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long]), 10);
+            });            
+
+            // this.orderMapInit(this.editOrder.graveyard.introtext);
+            // this.mapOrder.container.fitToViewport();
+        },
+        orderMapInit() {
+            this.mapOrder = new ymaps.Map('yandex-map-order', {
+                center: [55.755768, 37.617671],
+                zoom: 10
+            }, {
+                // При сложных перестроениях можно выставить автоматическое
+                // обновление карты при изменении размеров контейнера.
+                // При простых изменениях размера контейнера рекомендуется обновлять карту программно.
+                autoFitToViewport: 'always'
+                // searchControlProvider: 'yandex#search'
+            });
+
+            // Создаем точку.
+            this.placemark = new ymaps.Placemark([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long], {
+                iconContent: this.editOrder.virtual.graveyard_name,
+            }, {
+                preset: 'islands#redStretchyIcon',
+                draggable: true,
+            });
+
+            this.mapOrder.geoObjects.add(placemark);
+        }
     },
   }
 </script>

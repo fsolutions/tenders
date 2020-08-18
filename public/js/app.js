@@ -2026,9 +2026,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   watch: {},
   mounted: function mounted() {
+    var _this = this;
+
     var self = this;
     $(this.dialogES).on('hidden.bs.modal', function (e) {
       self.close();
+    });
+    var askButton = document.querySelectorAll('.askUsNow');
+    askButton[0].addEventListener('click', function (event) {
+      event.preventDefault();
+      var elem = document.getElementById('footerSupport');
+
+      _this.triggerEvent(elem, 'click');
     });
   },
   methods: {
@@ -2043,16 +2052,22 @@ __webpack_require__.r(__webpack_exports__);
       $(this.dialogES).modal('show');
     },
     sendQuestion: function sendQuestion() {
-      var _this = this;
+      var _this2 = this;
 
       this.sendingQuestion = true;
       axios.post(_API__WEBPACK_IMPORTED_MODULE_0__["API_POST_SEND_QUESTION"], this.support).then(function (response) {
-        _this.questionSended = true;
+        _this2.questionSended = true;
       })["catch"](function (err) {
         return console.log(err.response.data);
       })["finally"](function () {
-        return _this.sendingQuestion = false;
+        return _this2.sendingQuestion = false;
       });
+    },
+    triggerEvent: function triggerEvent(elem, event) {
+      console.log("2");
+      var clickEvent = new Event(event); // Create the event.
+
+      elem.dispatchEvent(clickEvent); // Dispatch the event.
     }
   }
 });
@@ -2320,184 +2335,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-var initialBoxItem = function initialBoxItem() {
-  return {
-    id: '',
-    order_id: '',
-    index: '',
-    grad: '',
-    way: '',
-    way_name: '',
-    way_description: '',
-    secret_code: '',
-    number_of_openings: '',
-    kupons: []
-  };
-};
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {},
@@ -2509,79 +2346,45 @@ var initialBoxItem = function initialBoxItem() {
   },
   data: function data() {
     return {
+      mapOrder: '',
       order: {
         id: '',
-        url: '',
-        name: '',
-        name_visible: '',
-        description: '',
-        additional_urls: '',
-        is_paied: '',
-        user_id: '',
+        ordertxt_stringify: '',
+        order_city_id: '',
+        order_object_id: '',
+        order_object_name_ext: '',
+        order_text_details: '',
+        city: {},
+        graveyard: {},
+        number_of_graves: '',
+        itogsum: '',
+        tarif: '',
+        tarif_stringify: '',
         status: '',
-        paid_till: '',
-        paid_till_formated: '',
         status_stringify: '',
-        can_delete: '',
-        boxes: [],
-        followers: []
+        status_cssclass: '',
+        can_access: false,
+        reacted: false,
+        react: [],
+        can_delete: false,
+        virtual: {
+          graveyard_name: '',
+          choice_edit: 0,
+          reaction: false,
+          map: false
+        }
       },
       savingOrder: false,
-      activeMenu: "main",
       limit: 10,
-      showDisabled: false,
-      size: 'default',
-      align: 'center',
       progress: -1,
       reloading: false,
       loadingTimer: 1000,
-      search: "",
-      checkOrderFullness: false,
-      linksFollowedLoading: true,
-      openedKuponsLoading: true,
-      editedBox: initialBoxItem(),
-      editBoxWay: {
-        0: false,
-        1: false,
-        2: false,
-        3: false
-      },
-      editBoxWayName: {
-        0: false,
-        1: false,
-        2: false,
-        3: false
-      },
-      editBoxWayDescription: {
-        0: false,
-        1: false,
-        2: false,
-        3: false
-      },
-      editBoxGrad: {
-        0: false,
-        1: false,
-        2: false,
-        3: false
-      },
-      dialogKupons: '#kuponsPopup',
-      selectedBoxId: 0,
-      statistics: {
-        linksFollowed: 0,
-        // Кликов по ссылкам переходов
-        openedKupons: 0,
-        // Открытые купоны
-        leftKupons: 0 // Оставшиеся купоны
-
-      }
+      search: ""
     };
   },
   watch: {
     order: {
-      handler: function handler() {
-        this.checkOrderFullness = this.orderFullness();
-        this.countLeftKupons();
-      },
+      handler: function handler() {},
       deep: true,
       immediate: true
     }
@@ -2592,43 +2395,30 @@ var initialBoxItem = function initialBoxItem() {
   },
   created: function created() {
     this.order = Object.assign(this.order, this.importedOrder);
+    this.$set(this.order, 'virtual', {});
+    this.$set(this.order.virtual, 'reaction', false);
+    this.$set(this.order.virtual, 'choice_edit', 0);
+    this.$set(this.order.virtual, 'graveyard_name', "");
+    this.$set(this.order.virtual, 'map', false);
+    this.$set(this.order.virtual, 'grave_lat', '');
+    this.$set(this.order.virtual, 'grave_long', '');
 
-    if (this.orderFullness() === false) {
-      this.openSettings();
+    if (!this.order.order_object_name_ext && this.order.graveyard) {
+      this.order.virtual.graveyard_name = this.order.graveyard.pagetitle;
+    } else if (this.order.order_object_name_ext) {
+      this.order.virtual.graveyard_name = this.order.order_object_name_ext;
+    }
+
+    if (this.order.graveyard && this.order.graveyard.introtext) {
+      var coords = this.order.graveyard.introtext.split(",");
+      this.order.virtual.map = true;
+      this.order.virtual.grave_lat = coords[0];
+      this.order.virtual.grave_long = coords[1];
     }
 
     console.log("order", this.order);
-    this.loadStatistics();
   },
   methods: {
-    orderFullness: function orderFullness() {
-      if (!this.order.url || !this.order.name || !this.order.name_visible || !this.order.description) {
-        return false;
-      }
-
-      return true;
-    },
-    openSettings: function openSettings() {
-      $('.order__settings__formarea').toggleClass('hidden');
-    },
-    getResults: function getResults() {// this.progress = 15;
-      // axios.get(API_GET_orders + '?page=' + page)
-      //   .then(response => {
-      //       // console.log(response);
-      //       this.progress = 85;
-      //       setTimeout(() => {
-      //           this.progress = -1;
-      //       }, this.loadingTimer);
-      //       this.orders = response.data;
-      //       this.orders.data.forEach(site => {
-      //           site.choice_edit = 0;
-      //       });
-      //   })
-      //   .catch(err => console.log(err.response.data))
-      //   .finally(() => (this.progress = -1));
-
-      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
-    },
     reloadOrder: function reloadOrder(orderId) {
       var _this = this;
 
@@ -2643,187 +2433,30 @@ var initialBoxItem = function initialBoxItem() {
         return _this.reloading = false;
       });
     },
-    changeStatusNow: function changeStatusNow() {
+    reactNow: function reactNow() {
       var _this2 = this;
 
-      this.savingOrder = true;
-      var neworderstatus = this.order.status == 1 ? 0 : 1;
-      axios.put(_API__WEBPACK_IMPORTED_MODULE_0__["API_CRUD_ORDER"] + '/' + this.order.id, {
-        'status': neworderstatus,
-        'url': this.order.url
-      }).then(function (response) {
-        _this2.order.status = response.data.status;
+      this.order.virtual.reaction = true;
+      axios.get(_API__WEBPACK_IMPORTED_MODULE_0__["API_SEND_ORDER_REACTION"] + '/' + this.order.id).then(function (response) {
+        _this2.order.reacted = true;
       })["catch"](function (err) {
         return console.log(err.response);
-      })["finally"](function () {
-        return _this2.savingOrder = false;
       });
     },
-    offKuponsPopup: function offKuponsPopup() {
-      $(this.dialogKupons).modal('hide');
-    },
-    openKuponsEdit: function openKuponsEdit(boxIndex) {
-      this.selectedBoxId = boxIndex;
-      $(this.dialogKupons).modal('show');
-    },
-    updateKuponsInBox: function updateKuponsInBox(kupons) {
-      this.order.boxes[this.selectedBoxId].kupons = kupons; // this.offKuponsPopup();
-
-      this.checkBoxesOnKupons();
-    },
-    updateOrderEmit: function updateOrderEmit(order) {
-      this.order = Object.assign(this.order, order);
-      this.checkBoxesOnKupons();
-    },
-    checkBoxesOnKupons: function checkBoxesOnKupons() {
-      this.order.boxes.forEach(function (box) {
-        var kuponSumOfCount = 0;
-        box.nokupons = true;
-        box.kupons.forEach(function (kupon) {
-          kuponSumOfCount += kupon.count;
-        });
-
-        if (kuponSumOfCount > 0) {
-          box.nokupons = false;
-        }
-      });
-    },
-    saveBtnToggler: function saveBtnToggler() {
-      $('.saverBtn').toggleClass("fas fa-check");
-      $('.saverBtn').toggleClass("fas fa-spinner fa-spin");
-    },
-    closeAllEditors: function closeAllEditors() {
-      for (var prop in this.editBoxWay) {
-        this.editBoxWay[prop] = false;
-      }
-
-      for (var prop in this.editBoxWayName) {
-        this.editBoxWayName[prop] = false;
-      }
-
-      for (var prop in this.editBoxWayDescription) {
-        this.editBoxWayDescription[prop] = false;
-      }
-
-      for (var prop in this.editBoxGrad) {
-        this.editBoxGrad[prop] = false;
-      }
-    },
-    openBox: function openBox(boxIndex, objName) {
-      this.closeAllEditors();
-      this.editedBox = Object.assign({}, this.order.boxes[boxIndex]);
-      this[objName][boxIndex] = true;
-    },
-    saveBox: function saveBox(boxIndex, objName) {
+    changeStatus: function changeStatus(newStatus) {
       var _this3 = this;
 
-      this.saveBtnToggler();
-      var box = this.order.boxes[boxIndex];
-      axios.put(API_BOXES_RESOURCE + '/' + box.id, box).then(function (response) {
-        _this3.editedBox = initialBoxItem();
-        _this3[objName][boxIndex] = false;
-
-        _this3.saveBtnToggler();
-
-        console.log("Box ".concat(box.id, " saved!"));
-      })["catch"](function (err) {
-        return console.log(err.response.data);
-      });
-    },
-    cancelBoxEdit: function cancelBoxEdit(boxIndex, objName) {
-      this.order.boxes[boxIndex] = Object.assign(this.order.boxes[boxIndex], this.editedBox);
-      this.editedBox = initialBoxItem();
-      this[objName][boxIndex] = false;
-    },
-    createDefaultBoxes: function createDefaultBoxes(orderId) {
-      var _this4 = this;
-
-      this.progress = 15;
-      axios.get(_API__WEBPACK_IMPORTED_MODULE_0__["API_CRUD_ORDER"] + '/' + orderId).then(function (response) {
-        _this4.progress = 85;
-        _this4.order.boxes = response.data;
-      })["catch"](function (err) {
-        return console.log(err.response.data);
-      })["finally"](function () {
-        return _this4.progress = -1;
-      });
-    },
-    addAdditionalURL: function addAdditionalURL(index) {
-      if (!this.order.additional_urls) {
-        this.order.additional_urls = [];
-      }
-
-      this.order.additional_urls.push("");
-    },
-    deleteUrl: function deleteUrl(index) {
-      this.order.additional_urls.splice(index, 1);
-    },
-    updateOrder: function updateOrder() {
-      var _this5 = this;
-
-      this.savingOrder = true;
-
-      if (!this.order.additional_urls) {
-        this.order.additional_urls = [];
-      }
-
-      this.order.additional_urls.forEach(function (url, index) {
-        if (!url) {
-          _this5.order.additional_urls.splice(index, 1);
-        }
-      });
-      axios.put(_API__WEBPACK_IMPORTED_MODULE_0__["API_CRUD_ORDER"] + '/' + this.order.id, this.order).then(function (response) {
-        if (_this5.orderFullness() === false) {
-          _this5.openSettings();
-        }
+      this.order.virtual.reaction = true;
+      axios.put(_API__WEBPACK_IMPORTED_MODULE_0__["API_CRUD_ORDER"] + '/' + this.order.id, {
+        "status": newStatus
+      }).then(function (response) {
+        _this3.order.status = newStatus;
+        _this3.order.virtual.reaction = false;
+        _this3.order.status = response.data.status;
+        _this3.order.status_cssclass = response.data.status_cssclass;
+        _this3.order.status_stringify = response.data.status_stringify;
       })["catch"](function (err) {
         return console.log(err.response);
-      })["finally"](function () {
-        return _this5.savingOrder = false;
-      });
-    },
-    deleteRecord: function deleteRecord(index) {
-      var _this6 = this;
-
-      confirm('Вы уверены что хотите удалить эту строку?') && axios["delete"]('/site/' + this.orders.data[index].id).then(function (res) {
-        _this6.orders.data.splice(index, 1);
-
-        _this6.orders.total--;
-      })["catch"](function (err) {
-        return console.log(err.response);
-      })["finally"](function () {
-        return _this6.loading = false;
-      });
-    },
-    changeMenu: function changeMenu(menu) {
-      this.activeMenu = menu;
-    },
-    countLeftKupons: function countLeftKupons() {
-      var _this7 = this;
-
-      this.statistics.leftKupons = 0;
-      this.order.boxes.forEach(function (box) {
-        box.kupons.forEach(function (kupon) {
-          _this7.statistics.leftKupons += parseInt(kupon.count);
-        });
-      });
-    },
-    loadedStat: function loadedStat() {
-      this.linksFollowedLoading = false;
-      this.openedKuponsLoading = false;
-    },
-    loadStatistics: function loadStatistics() {
-      var _this8 = this;
-
-      this.linksFollowedLoading = true;
-      this.openedKuponsLoading = true;
-      axios.get(API_GET_STAT_NUMBERS + '/' + this.order.id).then(function (response) {
-        _this8.statistics.linksFollowed = parseInt(response.data.linksFollowed);
-        _this8.statistics.openedKupons = parseInt(response.data.openedKupons);
-      })["catch"](function (err) {
-        return console.log(err.response.data);
-      })["finally"](function () {
-        return _this8.loadedStat();
       });
     }
   }
@@ -2972,6 +2605,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {},
@@ -2986,23 +2667,37 @@ __webpack_require__.r(__webpack_exports__);
       addingNew: false,
       loadingTimer: 1000,
       search: "",
-      dialogES: '#editOrder',
+      dialogEO: '#editOrder',
       editIndex: -1,
       defaultEditOrder: {},
+      mapOrder: '',
+      placemark: '',
       editOrder: {
         id: '',
-        url: '',
-        name: '',
-        name_visible: '',
-        description: '',
-        additional_urls: '',
-        is_paied: '',
-        user_id: '',
+        ordertxt_stringify: '',
+        order_city_id: '',
+        order_object_id: '',
+        order_object_name_ext: '',
+        order_text_details: '',
+        city: {},
+        graveyard: {},
+        number_of_graves: '',
+        itogsum: '',
+        tarif: '',
+        tarif_stringify: '',
         status: '',
-        paid_till: '',
-        paid_till_formated: '',
         status_stringify: '',
-        can_delete: ''
+        status_cssclass: '',
+        can_access: false,
+        reacted: false,
+        react: [],
+        can_delete: false,
+        virtual: {
+          graveyard_name: '',
+          choice_edit: 0,
+          reaction: false,
+          map: false
+        }
       }
     };
   },
@@ -3014,10 +2709,11 @@ __webpack_require__.r(__webpack_exports__);
     // Прогрузим первичные данные
     this.getResults();
     var self = this;
-    $(this.dialogES).on('hidden.bs.modal', function (e) {
+    $(this.dialogEO).on('hidden.bs.modal', function (e) {
       self.close();
-    }); // $('#allorders').DataTable();
+    });
   },
+  created: function created() {},
   methods: {
     getResults: function getResults() {
       var _this = this;
@@ -3032,8 +2728,33 @@ __webpack_require__.r(__webpack_exports__);
         }, _this.loadingTimer);
         _this.orders = response.data;
 
-        _this.orders.data.forEach(function (order) {
-          order.choice_edit = 0;
+        _this.orders.data.forEach(function (order, index) {
+          _this.$set(_this.orders.data[index], 'virtual', {});
+
+          _this.$set(_this.orders.data[index].virtual, 'reaction', false);
+
+          _this.$set(_this.orders.data[index].virtual, 'choice_edit', 0);
+
+          _this.$set(_this.orders.data[index].virtual, 'graveyard_name', "");
+
+          _this.$set(_this.orders.data[index].virtual, 'map', false);
+
+          _this.$set(_this.orders.data[index].virtual, 'grave_lat', '');
+
+          _this.$set(_this.orders.data[index].virtual, 'grave_long', '');
+
+          if (!order.order_object_name_ext && order.graveyard) {
+            order.virtual.graveyard_name = order.graveyard.pagetitle;
+          } else if (order.order_object_name_ext) {
+            order.virtual.graveyard_name = order.order_object_name_ext;
+          }
+
+          if (order.graveyard && order.graveyard.introtext) {
+            var coords = order.graveyard.introtext.split(",");
+            _this.orders.data[index].virtual.map = true;
+            _this.orders.data[index].virtual.grave_lat = coords[0];
+            _this.orders.data[index].virtual.grave_long = coords[1];
+          }
         });
       })["catch"](function (err) {
         return console.log(err.response.data);
@@ -3054,8 +2775,33 @@ __webpack_require__.r(__webpack_exports__);
         }, _this2.loadingTimer);
         _this2.orders = response.data;
 
-        _this2.orders.data.forEach(function (order) {
-          order.choice_edit = 0;
+        _this2.orders.data.forEach(function (order, index) {
+          _this2.$set(_this2.orders.data[index], 'virtual', {});
+
+          _this2.$set(_this2.orders.data[index].virtual, 'reaction', false);
+
+          _this2.$set(_this2.orders.data[index].virtual, 'choice_edit', 0);
+
+          _this2.$set(_this2.orders.data[index].virtual, 'graveyard_name', "");
+
+          _this2.$set(_this2.orders.data[index].virtual, 'map', false);
+
+          _this2.$set(_this2.orders.data[index].virtual, 'grave_lat', '');
+
+          _this2.$set(_this2.orders.data[index].virtual, 'grave_long', '');
+
+          if (!order.order_object_name_ext && order.graveyard) {
+            order.virtual.graveyard_name = order.graveyard.pagetitle;
+          } else if (order.order_object_name_ext) {
+            order.virtual.graveyard_name = order.order_object_name_ext;
+          }
+
+          if (order.graveyard && order.graveyard.introtext) {
+            var coords = order.graveyard.introtext.split(",");
+            _this2.orders.data[index].virtual.map = true;
+            _this2.orders.data[index].virtual.grave_lat = coords[0];
+            _this2.orders.data[index].virtual.grave_long = coords[1];
+          }
         });
       })["catch"](function (err) {
         return console.log(err.response.data);
@@ -3065,12 +2811,12 @@ __webpack_require__.r(__webpack_exports__);
     },
     close: function close() {
       this.progress = -1;
-      $(this.dialogES).modal('hide');
+      $(this.dialogEO).modal('hide');
       this.editOrder = Object.assign({}, this.defaultEditOrder);
       this.editIndex = -1;
     },
     newOrder: function newOrder() {
-      $(this.dialogES).modal('show');
+      $(this.dialogEO).modal('show');
     },
     createOrder: function createOrder() {
       var _this3 = this;
@@ -3101,20 +2847,63 @@ __webpack_require__.r(__webpack_exports__);
         return console.log(err.response);
       });
     },
-    statusTextColor: function statusTextColor(status) {
-      var color;
+    reactNow: function reactNow(index) {
+      var _this5 = this;
 
-      switch (status) {
-        case 1:
-          color = "text-green";
-          break;
+      this.orders.data[index].virtual.reaction = true;
+      axios.get(_API__WEBPACK_IMPORTED_MODULE_0__["API_SEND_ORDER_REACTION"] + '/' + this.orders.data[index].id).then(function (response) {
+        _this5.orders.data[index].reacted = true;
+        _this5.orders.data[index].virtual.reaction = false;
+      })["catch"](function (err) {
+        return console.log(err.response);
+      })["finally"](function () {
+        return _this5.orders.data[index].reacted = true;
+      });
+    },
+    changeStatus: function changeStatus(index, newStatus) {
+      var _this6 = this;
 
-        default:
-          color = "text-danger";
-          break;
-      }
+      this.orders.data[index].virtual.reaction = true;
+      axios.put(_API__WEBPACK_IMPORTED_MODULE_0__["API_CRUD_ORDER"] + '/' + this.orders.data[index].id, {
+        "status": newStatus
+      }).then(function (response) {
+        _this6.orders.data[index].status = newStatus;
+        _this6.orders.data[index].virtual.reaction = false;
+        _this6.orders.data[index].status = response.data.status;
+        _this6.orders.data[index].status_cssclass = response.data.status_cssclass;
+        _this6.orders.data[index].status_stringify = response.data.status_stringify;
+      })["catch"](function (err) {
+        return console.log(err.response);
+      });
+    },
+    openOrderOnMap: function openOrderOnMap(index) {
+      this.editOrder = Object.assign({}, this.orders.data[index]);
+      $(this.dialogEO).modal('show');
+      $(this.dialogEO).on('shown.bs.modal', function () {
+        this.mapOrder.container.fitToViewport(); // this.placemark.geometry.setCoordinates([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long]);
+        // this.mapOrder.setCenter(new YMaps.GeoPoint([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long]), 10);
+      }); // this.orderMapInit(this.editOrder.graveyard.introtext);
+      // this.mapOrder.container.fitToViewport();
+    },
+    orderMapInit: function orderMapInit() {
+      this.mapOrder = new ymaps.Map('yandex-map-order', {
+        center: [55.755768, 37.617671],
+        zoom: 10
+      }, {
+        // При сложных перестроениях можно выставить автоматическое
+        // обновление карты при изменении размеров контейнера.
+        // При простых изменениях размера контейнера рекомендуется обновлять карту программно.
+        autoFitToViewport: 'always' // searchControlProvider: 'yandex#search'
 
-      return "text-center " + color;
+      }); // Создаем точку.
+
+      this.placemark = new ymaps.Placemark([this.editOrder.virtual.grave_lat, this.editOrder.virtual.grave_long], {
+        iconContent: this.editOrder.virtual.graveyard_name
+      }, {
+        preset: 'islands#redStretchyIcon',
+        draggable: true
+      });
+      this.mapOrder.geoObjects.add(placemark);
     }
   }
 });
@@ -74047,209 +73836,197 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "section",
-    { staticClass: "mx-0 mx-md-5 mt-5 mb-1 order__footer" },
-    [
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-sm-12 col-md-4 pt-2" }, [
-          _vm._v("\n          © Gravescare Tenders\n      ")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-sm-12 col-md-4 text-center" }),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "col-sm-12 col-md-4 text-left text-md-right pt-2" },
-          [
-            _c(
-              "a",
-              {
-                staticClass: "plaform__footer__supportbtn",
-                attrs: { href: "#" },
-                on: {
-                  click: function($event) {
-                    return _vm.newQuestion()
-                  }
-                }
-              },
-              [_vm._v("Поддержка")]
-            )
-          ]
-        )
+  return _c("section", { staticClass: "mt-5 mb-1 order__footer" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-sm-12 col-md-4 pt-2" }, [
+        _vm._v("\n          © Gravescare Tenders\n      ")
       ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-sm-12 col-md-4 text-center" }),
       _vm._v(" "),
       _c(
         "div",
-        {
-          staticClass: "modal fade",
-          attrs: {
-            id: "supportPopup",
-            tabindex: "-1",
-            role: "dialog",
-            "aria-labelledby": "supportPopupTitle",
-            "aria-hidden": "true"
-          }
-        },
+        { staticClass: "col-sm-12 col-md-4 text-left text-md-right pt-2" },
         [
           _c(
-            "div",
+            "a",
             {
-              staticClass: "modal-dialog modal-dialog-centered",
-              attrs: { role: "document" }
+              staticClass: "order__footer__supportbtn",
+              attrs: { href: "#", id: "footerSupport" },
+              on: {
+                click: function($event) {
+                  return _vm.newQuestion()
+                }
+              }
             },
-            [
-              _c("div", { staticClass: "modal-content" }, [
-                _vm._m(0),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "modal-body" },
-                  [
-                    _vm.questionSended ? [_vm._m(1)] : _vm._e(),
-                    _vm._v(" "),
-                    !_vm.questionSended
-                      ? _c(
-                          "form",
-                          {
-                            staticClass: "needs-validation",
-                            attrs: { id: "questionSendingForm", novalidate: "" }
-                          },
-                          [
-                            _c("div", { staticClass: "form-row" }, [
-                              _c(
-                                "div",
-                                { staticClass: "form-group col-md-12" },
-                                [
-                                  _c("label", { attrs: { for: "subject" } }, [
-                                    _vm._v("Тема обращения")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("input", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.support.subject,
-                                        expression: "support.subject"
-                                      }
-                                    ],
-                                    staticClass: "form-control",
-                                    attrs: {
-                                      type: "text",
-                                      required: "",
-                                      id: "subject",
-                                      placeholder: "У меня есть предложение"
-                                    },
-                                    domProps: { value: _vm.support.subject },
-                                    on: {
-                                      input: function($event) {
-                                        if ($event.target.composing) {
-                                          return
-                                        }
-                                        _vm.$set(
-                                          _vm.support,
-                                          "subject",
-                                          $event.target.value
-                                        )
-                                      }
-                                    }
-                                  })
-                                ]
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "form-row" }, [
-                              _c(
-                                "div",
-                                { staticClass: "form-group col-md-12" },
-                                [
-                                  _c("label", { attrs: { for: "question" } }, [
-                                    _vm._v("Вопрос или предложение")
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("textarea", {
-                                    directives: [
-                                      {
-                                        name: "model",
-                                        rawName: "v-model",
-                                        value: _vm.support.question,
-                                        expression: "support.question"
-                                      }
-                                    ],
-                                    staticClass: "form-control",
-                                    attrs: {
-                                      required: "",
-                                      id: "question",
-                                      rows: "6"
-                                    },
-                                    domProps: { value: _vm.support.question },
-                                    on: {
-                                      input: function($event) {
-                                        if ($event.target.composing) {
-                                          return
-                                        }
-                                        _vm.$set(
-                                          _vm.support,
-                                          "question",
-                                          $event.target.value
-                                        )
-                                      }
-                                    }
-                                  })
-                                ]
-                              )
-                            ])
-                          ]
-                        )
-                      : _vm._e()
-                  ],
-                  2
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("Закрыть")]
-                  ),
-                  _vm._v(" "),
-                  !_vm.questionSended
-                    ? _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-success",
-                          attrs: { type: "button" },
-                          on: {
-                            click: function($event) {
-                              return _vm.sendQuestion()
-                            }
-                          }
-                        },
-                        [
-                          _vm.sendingQuestion
-                            ? _c("span", {
-                                staticClass: "spinner-border spinner-border-sm",
-                                attrs: { role: "status", "aria-hidden": "true" }
-                              })
-                            : _vm._e(),
-                          _vm._v(
-                            "\n                  Отправить нам\n              "
-                          )
-                        ]
-                      )
-                    : _vm._e()
-                ])
-              ])
-            ]
+            [_vm._v("Поддержка")]
           )
         ]
       )
-    ]
-  )
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "supportPopup",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "supportPopupTitle",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass: "modal-dialog modal-dialog-centered",
+            attrs: { role: "document" }
+          },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "modal-body" },
+                [
+                  _vm.questionSended ? [_vm._m(1)] : _vm._e(),
+                  _vm._v(" "),
+                  !_vm.questionSended
+                    ? _c(
+                        "form",
+                        {
+                          staticClass: "needs-validation",
+                          attrs: { id: "questionSendingForm", novalidate: "" }
+                        },
+                        [
+                          _c("div", { staticClass: "form-row" }, [
+                            _c("div", { staticClass: "form-group col-md-12" }, [
+                              _c("label", { attrs: { for: "subject" } }, [
+                                _vm._v("Тема обращения")
+                              ]),
+                              _vm._v(" "),
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.support.subject,
+                                    expression: "support.subject"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: {
+                                  type: "text",
+                                  required: "",
+                                  id: "subject",
+                                  placeholder: "У меня есть предложение"
+                                },
+                                domProps: { value: _vm.support.subject },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.support,
+                                      "subject",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-row" }, [
+                            _c("div", { staticClass: "form-group col-md-12" }, [
+                              _c("label", { attrs: { for: "question" } }, [
+                                _vm._v("Вопрос или предложение")
+                              ]),
+                              _vm._v(" "),
+                              _c("textarea", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.support.question,
+                                    expression: "support.question"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: {
+                                  required: "",
+                                  id: "question",
+                                  rows: "6"
+                                },
+                                domProps: { value: _vm.support.question },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.support,
+                                      "question",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ])
+                          ])
+                        ]
+                      )
+                    : _vm._e()
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-secondary",
+                    attrs: { type: "button", "data-dismiss": "modal" }
+                  },
+                  [_vm._v("Закрыть")]
+                ),
+                _vm._v(" "),
+                !_vm.questionSended
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-success",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.sendQuestion()
+                          }
+                        }
+                      },
+                      [
+                        _vm.sendingQuestion
+                          ? _c("span", {
+                              staticClass: "spinner-border spinner-border-sm",
+                              attrs: { role: "status", "aria-hidden": "true" }
+                            })
+                          : _vm._e(),
+                        _vm._v(
+                          "\n                  Отправить нам\n              "
+                        )
+                      ]
+                    )
+                  : _vm._e()
+              ])
+            ])
+          ]
+        )
+      ]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
@@ -74399,1290 +74176,391 @@ var render = function() {
     "div",
     { staticClass: "container" },
     [
-      _c("div", { staticClass: "order__header" }, [
-        _c("div", { staticClass: "order__header__bg" }),
-        _vm._v(" "),
-        _vm._m(0),
-        _vm._v(" "),
-        _c("div", { staticClass: "sidenav", attrs: { id: "mySidenav" } }, [
-          _c(
-            "a",
-            {
-              staticClass: "closebtn",
-              attrs: { href: "javascript:void(0)", onclick: "closeNav()" }
-            },
-            [_vm._v("×")]
-          ),
+      _c("section", [
+        _c("div", { staticClass: "row mt-5 mb-4" }, [
+          _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+            _c("div", { staticClass: "headUp" }, [
+              _c("span", { staticClass: "mr-4" }, [
+                _vm._v("Тендер на заказ #" + _vm._s(_vm.order.id))
+              ]),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "btn btn-sm btn-secondary",
+                  attrs: { href: "/orders" }
+                },
+                [_vm._v("Посмотреть все тендеры")]
+              )
+            ])
+          ]),
           _vm._v(" "),
-          _c("a", { attrs: { href: "/orders" } }, [_vm._v("Мои площадки")]),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              class: _vm.activeMenu == "main" ? "active" : "",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.changeMenu("main")
-                }
-              }
-            },
-            [_vm._v("Рекламная кампания")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              class: _vm.activeMenu == "promo-codes" ? "active" : "",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.changeMenu("promo-codes")
-                }
-              }
-            },
-            [_vm._v("Промо-коды")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              class: _vm.activeMenu == "statistics" ? "active" : "",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.changeMenu("statistics")
-                }
-              }
-            },
-            [_vm._v("Статистика")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              class: _vm.activeMenu == "payment" ? "active" : "",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.changeMenu("payment")
-                }
-              }
-            },
-            [
-              _vm._v("Оплата "),
-              !_vm.order.is_paied
-                ? _c(
-                    "span",
-                    {
-                      staticClass: "text-danger ml-1",
-                      attrs: { title: "Необходимо оплатить" }
-                    },
-                    [_c("i", { staticClass: "fas fa-exclamation-triangle" })]
-                  )
-                : _vm._e()
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              class: _vm.activeMenu == "widget" ? "active" : "",
-              attrs: { href: "#" },
-              on: {
-                click: function($event) {
-                  return _vm.changeMenu("widget")
-                }
-              }
-            },
-            [_vm._v("Код виджета")]
-          ),
-          _vm._v(" "),
-          _c("a", { attrs: { href: "#" } }, [_vm._v("Поддержка")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "productVersion" }, [_vm._v("Версия 1.15")])
+          _c("div", { staticClass: "col-sm-12 col-md-6" })
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "container px-5" }, [
-          _c("div", { staticClass: "row" }, [
-            _vm._m(1),
+        _c("div", { staticClass: "card nobrd" }, [
+          _c("div", { staticClass: "card-body table-responsive p-0" }, [
+            _vm.progress != -1
+              ? _c("div", { staticClass: "progress" }, [
+                  _c("div", {
+                    staticClass:
+                      "progress-bar progress-bar-striped progress-bar-animated",
+                    style: "width: " + _vm.progress + "%",
+                    attrs: {
+                      role: "progressbar",
+                      "aria-valuenow": "0",
+                      "aria-valuemin": "0",
+                      "aria-valuemax": "100"
+                    }
+                  })
+                ])
+              : _vm._e()
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card mb-3" }, [
+          _c("div", { staticClass: "card-body" }, [
+            _c("div", { staticClass: "card-title" }, [
+              _c(
+                "div",
+                {
+                  class:
+                    "tendercart-type__status-public " +
+                    _vm.order.status_cssclass,
+                  attrs: { id: "" + _vm.order.id }
+                },
+                [_vm._v(_vm._s(_vm.order.status_stringify))]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "orderid__item-settings" }, [
+                _c("span", { staticClass: "reference _public" }, [
+                  _vm._v("Заказ #" + _vm._s(_vm.order.id))
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "b-tender__block--title" }, [
+                _c("div", { staticClass: "b-tender__title _wide" }, [
+                  _c("span", [_vm._v(_vm._s(_vm.order.tarif_stringify))])
+                ])
+              ]),
+              _vm._v(" "),
+              _vm.order.user_web_users_name ||
+              _vm.order.user_web_users_phone ||
+              _vm.order.user_web_users_email
+                ? _c(
+                    "div",
+                    {
+                      staticClass: "b-tender__info mt-4",
+                      staticStyle: {
+                        border: "1px solid #ff0000",
+                        padding: "20px"
+                      }
+                    },
+                    [
+                      _vm.order.user_web_users_name
+                        ? _c("div", { staticClass: "b-tender__info-item" }, [
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-title" },
+                              [_vm._v("Имя заказчика:")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-text" },
+                              [_vm._v(_vm._s(_vm.order.user_web_users_name))]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.order.user_web_users_phone
+                        ? _c("div", { staticClass: "b-tender__info-item" }, [
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-title" },
+                              [_vm._v("Телефон заказчика:")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-text" },
+                              [_vm._v(_vm._s(_vm.order.user_web_users_phone))]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.order.user_web_users_email
+                        ? _c("div", { staticClass: "b-tender__info-item" }, [
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-title" },
+                              [_vm._v("Почта заказчика:")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-text" },
+                              [_vm._v(_vm._s(_vm.order.user_web_users_email))]
+                            )
+                          ])
+                        : _vm._e()
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c("div", { staticClass: "row mt-4" }, [
+                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                  _c("div", { staticClass: "b-tender__info-item-subtitle" }, [
+                    _vm._v("Состав заказа")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", {
+                    domProps: {
+                      innerHTML: _vm._s(_vm.order.ordertxt_stringify)
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                  _vm.order.tarif == "extended" || _vm.order.tarif == "easy"
+                    ? _c("div", [
+                        _vm._m(0),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "b-tender__info-item-text" }, [
+                          _vm._v(_vm._s(_vm.order.number_of_graves))
+                        ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.order.order_text_details
+                    ? _c("div", [
+                        _c(
+                          "div",
+                          { staticClass: "b-tender__info-item-subtitle" },
+                          [_vm._v("Комментарий клиента")]
+                        ),
+                        _vm._v(" "),
+                        _c("p", [_vm._v(_vm._s(_vm.order.order_text_details))])
+                      ])
+                    : _vm._e()
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "b-tender__info mt-4" }, [
+                _vm.order.city.pagetitle
+                  ? _c("div", { staticClass: "b-tender__info-item" }, [
+                      _c("div", { staticClass: "b-tender__info-item-title" }, [
+                        _vm._v("Город:")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "b-tender__info-item-text" }, [
+                        _vm._v(_vm._s(_vm.order.city.pagetitle))
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.order.virtual.graveyard_name
+                  ? _c("div", { staticClass: "b-tender__info-item" }, [
+                      _c("div", { staticClass: "b-tender__info-item-title" }, [
+                        _vm._v("Кладбище:")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "b-tender__info-item-text" }, [
+                        _vm._v(_vm._s(_vm.order.virtual.graveyard_name))
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("div", { staticClass: "b-tender__info-item" }, [
+                  _c("div", { staticClass: "b-tender__info-item-title" }, [
+                    _vm._v("Опубликован")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "b-tender__info-item-text" }, [
+                    _vm._v(_vm._s(_vm.order.updatetime))
+                  ]),
+                  _vm._v(" "),
+                  _c("small", { staticClass: "text-muted" }, [
+                    _vm._v("время по Москве")
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "b-tender__info-item" }, [
+                  _c("div", { staticClass: "b-tender__info-item-title" }, [
+                    _vm._v("Бюджет:")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "b-tender__info-item-text" }, [
+                    _vm._v("от " + _vm._s(_vm.order.itogsum) + " "),
+                    _c("span", { staticClass: "rub _bold" })
+                  ]),
+                  _vm._v(" "),
+                  _c("small", { staticClass: "text-muted" }, [
+                    _vm._v("по согласованию")
+                  ])
+                ])
+              ])
+            ]),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-none d-md-block col-sm-12 col-md-6 order__header__settings__mainblock"
-              },
-              [
-                _c("div", { staticClass: "order__header__settings" }, [
-                  !_vm.checkOrderFullness
+            _c("div", { staticClass: "card-text mb-3" }, [
+              !_vm.order.can_access
+                ? _c("small", { staticClass: "text-muted" }, [
+                    _vm._v(
+                      "Контакт для связи с заказчиком доступен только зарегистрированным пользователям."
+                    )
+                  ])
+                : _vm._e()
+            ]),
+            _vm._v(" "),
+            _vm.order.can_delete
+              ? _c("div", { staticClass: "text-center text-md-left mb-3" }, [
+                  _vm._v(
+                    "\r\n                    Смена статусов: \r\n                    "
+                  ),
+                  _vm.order.status != 3
                     ? _c(
-                        "div",
+                        "button",
                         {
-                          staticClass: "order__header__openSettings",
+                          staticClass: "btn btn-sm btn-secondary mb-2",
                           on: {
                             click: function($event) {
-                              return _vm.openSettings()
+                              return _vm.changeStatus(3)
                             }
                           }
                         },
                         [
-                          _vm._v(
-                            "\r\n                            Настройте вашу кампанию \r\n                            "
-                          ),
-                          _vm._m(2)
+                          _vm.order.virtual.reaction
+                            ? _c("i", {
+                                staticClass: "fas fa-spinner fa-spin mr-2"
+                              })
+                            : _vm._e(),
+                          _vm._v("Вернуть прием заявок")
                         ]
                       )
                     : _vm._e(),
                   _vm._v(" "),
-                  _vm.checkOrderFullness
+                  _vm.order.status != 4
                     ? _c(
-                        "div",
+                        "button",
                         {
-                          staticClass: "order__header__openSettings good",
+                          staticClass: "btn btn-sm btn-info mb-2",
                           on: {
                             click: function($event) {
-                              return _vm.openSettings()
+                              return _vm.changeStatus(4)
                             }
                           }
                         },
                         [
-                          _vm._v(
-                            "\r\n                            Данные кампании заполнены\r\n                        "
-                          )
+                          _vm.order.virtual.reaction
+                            ? _c("i", {
+                                staticClass: "fas fa-spinner fa-spin mr-2"
+                              })
+                            : _vm._e(),
+                          _vm._v("Исполнитель выбран!")
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.order.status != 9
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-success mb-2",
+                          on: {
+                            click: function($event) {
+                              return _vm.changeStatus(9)
+                            }
+                          }
+                        },
+                        [
+                          _vm.order.virtual.reaction
+                            ? _c("i", {
+                                staticClass: "fas fa-spinner fa-spin mr-2"
+                              })
+                            : _vm._e(),
+                          _vm._v("Заказ успешно завершен!")
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.order.status != "canceled"
+                    ? _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-danger mb-2",
+                          on: {
+                            click: function($event) {
+                              return _vm.changeStatus("canceled")
+                            }
+                          }
+                        },
+                        [
+                          _vm.order.virtual.reaction
+                            ? _c("i", {
+                                staticClass: "fas fa-spinner fa-spin mr-2"
+                              })
+                            : _vm._e(),
+                          _vm._v("Заказ отменен")
                         ]
                       )
                     : _vm._e()
                 ])
-              ]
-            ),
+              : _vm._e(),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "col-sm-12 col-md-3 text-center text-md-right pt-2 mt-0 pt-md-3 mt-md-2"
-              },
-              [
-                _c("div", { staticClass: "order__header__info" }, [
-                  _vm._v("ID площадки: " + _vm._s(_vm.order.id))
-                ]),
-                _vm._v(" "),
-                _c("div", [
-                  _c("div", { staticClass: "custom-control custom-switch" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "customSwitch1",
-                        disabled: !_vm.order.is_paied,
-                        title:
-                          _vm.order.status == 1 ? "Оплачено до" : "Не оплачено"
-                      },
-                      domProps: { checked: _vm.order.status },
-                      on: {
-                        click: function($event) {
-                          return _vm.changeStatusNow()
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _vm.order.status == 1
-                      ? _c(
-                          "label",
-                          {
-                            staticClass: "custom-control-label",
-                            attrs: { for: "customSwitch1" }
-                          },
-                          [_vm._v("до " + _vm._s(_vm.order.paid_till_formated))]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.order.status == 0
-                      ? _c(
-                          "label",
-                          {
-                            staticClass: "custom-control-label",
-                            attrs: { for: "customSwitch1" }
-                          },
-                          [
-                            _vm.order.status == 0 && !_vm.order.is_paied
-                              ? _c("span", [
-                                  _vm._v(_vm._s(_vm.order.status_stringify))
-                                ])
-                              : _vm._e(),
-                            _vm._v(" "),
-                            _vm.order.status == 0 && _vm.order.is_paied
-                              ? _c("span", [
-                                  _vm._v(
-                                    "до " + _vm._s(_vm.order.paid_till_formated)
-                                  )
-                                ])
-                              : _vm._e()
-                          ]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    !_vm.order.is_paied
-                      ? _c("span", { staticClass: "head-payment" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-light ml-1",
-                              attrs: { href: "#", title: "Оплатить" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.changeMenu("payment")
-                                }
-                              }
-                            },
-                            [_c("i", { staticClass: "fas fa-dollar-sign" })]
-                          )
-                        ])
-                      : _vm._e()
-                  ])
+            _vm.order.reacted && _vm.order.can_access
+              ? _c("div", { staticClass: "text-center text-md-left" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-sm btn-success",
+                      attrs: { disabled: "" }
+                    },
+                    [_vm._v("Вы уже откликнулись!")]
+                  )
                 ])
-              ]
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "order__settings__formarea" }, [
-          _c("div", { staticClass: "order__settings__form" }, [
-            _c("div", { staticClass: "container" }, [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.order.name,
-                          expression: "order.name"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "text",
-                        placeholder: "Успешная кампания #1"
-                      },
-                      domProps: { value: _vm.order.name },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.order, "name", $event.target.value)
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("small", { staticClass: "form-text text-muted" }, [
-                      _vm._v("Название кампании, его видите только вы.")
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.order.url,
-                          expression: "order.url"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { type: "text", placeholder: "https://сайт.ru" },
-                      domProps: { value: _vm.order.url },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.order, "url", $event.target.value)
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("small", { staticClass: "form-text text-muted" }, [
-                      _vm._v("Адрес сайта, для которого создается кампания")
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-sm-12" }, [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.order.name_visible,
-                          expression: "order.name_visible"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "text",
-                        placeholder: "Скидка до 50% на новый велосипед!"
-                      },
-                      domProps: { value: _vm.order.name_visible },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.order,
-                            "name_visible",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("small", { staticClass: "form-text text-muted" }, [
-                      _vm._v(
-                        "Название кампании, отоброжающееся для ваших посетителей"
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("textarea", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.order.description,
-                          expression: "order.description"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { rows: "6", placeholder: "" },
-                      domProps: { value: _vm.order.description },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.order,
-                            "description",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c("small", { staticClass: "form-text text-muted" }, [
-                      _vm._v(
-                        "Описание сути и плюсов вашей реферальной кампании для посетителей сайта"
-                      )
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("div", { staticClass: "mb-2" }, [
-                      _c("b", { staticClass: "text-white mr-2" }, [
-                        _vm._v("Ограничить показ набором страниц")
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-sm btn-secondary",
-                          on: {
-                            click: function($event) {
-                              return _vm.addAdditionalURL()
-                            }
-                          }
-                        },
-                        [_vm._v("Добавить урл")]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "row" },
-                      _vm._l(_vm.order.additional_urls, function(url, index) {
-                        return _c(
-                          "div",
-                          { staticClass: "col-sm-12 col-md-6" },
-                          [
-                            _c("div", { staticClass: "form-inline row mb-2" }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.order.additional_urls[index],
-                                    expression: "order.additional_urls[index]"
-                                  }
-                                ],
-                                staticClass:
-                                  "form-control form-control-sm col-sm-9 ml-3 mr-1",
-                                attrs: {
-                                  type: "text",
-                                  placeholder: "/catalog.html или /catalog"
-                                },
-                                domProps: {
-                                  value: _vm.order.additional_urls[index]
-                                },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.order.additional_urls,
-                                      index,
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c(
-                                "button",
-                                {
-                                  staticClass:
-                                    "btn btn-sm btn-secondary col-sm-2",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.deleteUrl(index)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fas fa-times" })]
-                              )
-                            ])
-                          ]
-                        )
-                      }),
-                      0
-                    ),
-                    _vm._v(" "),
-                    _c("small", { staticClass: "form-text text-muted" }, [
-                      _vm._v(
-                        "Если необходимо ограничить показ реферальной кампании определенными URL адресами - добавьте их здесь. Если URL не заданы - кампания будет работать на всех страницах сайта. Указывайте URL без наименования сайта."
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-sm-12 text-center" }, [
+              : _vm._e(),
+            _vm._v(" "),
+            !_vm.order.reacted && _vm.order.can_access && _vm.order.status == 3
+              ? _c("div", { staticClass: "text-center text-md-left" }, [
                   _c(
                     "button",
                     {
                       staticClass: "btn btn-success",
                       on: {
                         click: function($event) {
-                          return _vm.updateOrder()
+                          return _vm.reactNow()
                         }
                       }
                     },
                     [
-                      _vm.savingOrder
+                      _vm.order.virtual.reaction
                         ? _c("i", {
                             staticClass: "fas fa-spinner fa-spin mr-2"
                           })
                         : _vm._e(),
-                      _vm._v("Сохранить настройки")
+                      _vm._v("Откликнуться на заказ")
                     ]
                   )
                 ])
-              ])
-            ])
+              : _vm._e(),
+            _vm._v(" "),
+            !_vm.order.can_access && _vm.order.status == 3
+              ? _c("div", { staticClass: "text-center text-md-left" }, [
+                  _c(
+                    "a",
+                    {
+                      staticClass: "btn btn-success",
+                      attrs: { href: "/register" }
+                    },
+                    [_vm._v("Зарегистрироваться и откликнуться!")]
+                  )
+                ])
+              : _vm._e()
           ])
-        ])
+        ]),
+        _vm._v(" "),
+        _vm._m(1)
       ]),
-      _vm._v(" "),
-      _vm.activeMenu == "main" || _vm.activeMenu == "statistics"
-        ? _c("section", { staticClass: "mb-3 order__statistic" }, [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-sm-12 text-left text-md-center" }, [
-                _c("span", { staticClass: "d-inline-block my-2 mx-2" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass:
-                        "badge badge-pill badge-warning stat-pill mr-2"
-                    },
-                    [
-                      _vm.linksFollowedLoading
-                        ? _c("i", { staticClass: "fas fa-spinner fa-spin" })
-                        : _vm._e(),
-                      !_vm.linksFollowedLoading
-                        ? _c("span", [
-                            _vm._v(_vm._s(_vm.statistics.linksFollowed))
-                          ])
-                        : _vm._e()
-                    ]
-                  ),
-                  _vm._v(" Переходов по ссылкам")
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "d-inline-block my-2 mx-2" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass:
-                        "badge badge-pill badge-success stat-pill mr-2"
-                    },
-                    [
-                      _vm.openedKuponsLoading
-                        ? _c("i", { staticClass: "fas fa-spinner fa-spin" })
-                        : _vm._e(),
-                      !_vm.openedKuponsLoading
-                        ? _c("span", [
-                            _vm._v(_vm._s(_vm.statistics.openedKupons))
-                          ])
-                        : _vm._e()
-                    ]
-                  ),
-                  _vm._v(" Отдано промо-кодов")
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "d-inline-block my-2 mx-2" }, [
-                  _c(
-                    "span",
-                    {
-                      staticClass: "badge badge-pill badge-info stat-pill mr-2"
-                    },
-                    [_vm._v(_vm._s(_vm.statistics.leftKupons))]
-                  ),
-                  _vm._v(" Промо-кодов осталось")
-                ])
-              ])
-            ])
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.activeMenu == "main"
-        ? _c("section", { staticClass: "main" }, [
-            _c(
-              "section",
-              { staticClass: "mx-0 mx-md-5 mb-3 order__box__settings" },
-              [
-                _vm._m(3),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c(
-                    "div",
-                    { staticClass: "col-sm-12" },
-                    [
-                      _vm.order.boxes.length == 0
-                        ? _c("div", { staticClass: "text-center my-5" }, [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-success",
-                                on: {
-                                  click: function($event) {
-                                    return _vm.createDefaultBoxes(_vm.order.id)
-                                  }
-                                }
-                              },
-                              [_vm._v("Создать бонусные боксы")]
-                            )
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("kupons-popup", {
-                        attrs: { box: _vm.order.boxes[_vm.selectedBoxId] },
-                        on: {
-                          updateKuponsInBox: _vm.updateKuponsInBox,
-                          offKuponsPopup: _vm.offKuponsPopup
-                        }
-                      }),
-                      _vm._v(" "),
-                      _vm.order.boxes.length > 0
-                        ? [
-                            _c(
-                              "div",
-                              {
-                                staticClass: "ref-row",
-                                staticStyle: {
-                                  margin: "15px 0 auto",
-                                  width: "100%"
-                                }
-                              },
-                              _vm._l(_vm.order.boxes, function(box, index) {
-                                return _c(
-                                  "div",
-                                  {
-                                    key: box.id,
-                                    class:
-                                      "ref-row-item ref-row-item-" +
-                                      box.index +
-                                      " ref-c3",
-                                    staticStyle: { opacity: "1" }
-                                  },
-                                  [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass: "ref-row-box",
-                                        staticStyle: { "padding-top": "20px" }
-                                      },
-                                      [
-                                        _c("div", {
-                                          staticClass: "ref-box-image"
-                                        }),
-                                        _vm._v(" "),
-                                        !_vm.editBoxWay[index]
-                                          ? _c(
-                                              "div",
-                                              {
-                                                staticClass: "ref-box-way",
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.openBox(
-                                                      index,
-                                                      "editBoxWay"
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  "\r\n                                        " +
-                                                    _vm._s(box.way) +
-                                                    "\r\n                                    "
-                                                )
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        _vm.editBoxWay[index]
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "mb-3 mt-3" },
-                                              [
-                                                _c(
-                                                  "div",
-                                                  {
-                                                    staticClass: "form-inline"
-                                                  },
-                                                  [
-                                                    _c("input", {
-                                                      directives: [
-                                                        {
-                                                          name: "model",
-                                                          rawName: "v-model",
-                                                          value: box.way,
-                                                          expression: "box.way"
-                                                        }
-                                                      ],
-                                                      staticClass:
-                                                        "form-control form-control-sm mr-1 ml-4 input-boxes",
-                                                      attrs: { type: "text" },
-                                                      domProps: {
-                                                        value: box.way
-                                                      },
-                                                      on: {
-                                                        input: function(
-                                                          $event
-                                                        ) {
-                                                          if (
-                                                            $event.target
-                                                              .composing
-                                                          ) {
-                                                            return
-                                                          }
-                                                          _vm.$set(
-                                                            box,
-                                                            "way",
-                                                            $event.target.value
-                                                          )
-                                                        }
-                                                      }
-                                                    }),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-success mr-1",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.saveBox(
-                                                              index,
-                                                              "editBoxWay"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-check saverBtn"
-                                                        })
-                                                      ]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-secondary",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.cancelBoxEdit(
-                                                              index,
-                                                              "editBoxWay"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-times"
-                                                        })
-                                                      ]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _vm._m(4, true)
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        !_vm.editBoxWayName[index]
-                                          ? _c(
-                                              "div",
-                                              {
-                                                staticClass: "ref-box-way-name",
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.openBox(
-                                                      index,
-                                                      "editBoxWayName"
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [_vm._v(_vm._s(box.way_name))]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        _vm.editBoxWayName[index]
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "mb-3 mt-1" },
-                                              [
-                                                _c(
-                                                  "div",
-                                                  {
-                                                    staticClass: "form-inline"
-                                                  },
-                                                  [
-                                                    _c("input", {
-                                                      directives: [
-                                                        {
-                                                          name: "model",
-                                                          rawName: "v-model",
-                                                          value: box.way_name,
-                                                          expression:
-                                                            "box.way_name"
-                                                        }
-                                                      ],
-                                                      staticClass:
-                                                        "form-control form-control-sm mr-1 ml-4 input-boxes",
-                                                      attrs: { type: "text" },
-                                                      domProps: {
-                                                        value: box.way_name
-                                                      },
-                                                      on: {
-                                                        input: function(
-                                                          $event
-                                                        ) {
-                                                          if (
-                                                            $event.target
-                                                              .composing
-                                                          ) {
-                                                            return
-                                                          }
-                                                          _vm.$set(
-                                                            box,
-                                                            "way_name",
-                                                            $event.target.value
-                                                          )
-                                                        }
-                                                      }
-                                                    }),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-success mr-1",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.saveBox(
-                                                              index,
-                                                              "editBoxWayName"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-check saverBtn"
-                                                        })
-                                                      ]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-secondary",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.cancelBoxEdit(
-                                                              index,
-                                                              "editBoxWayName"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-times"
-                                                        })
-                                                      ]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _vm._m(5, true)
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        !_vm.editBoxWayDescription[index]
-                                          ? _c(
-                                              "div",
-                                              {
-                                                staticClass:
-                                                  "ref-box-description",
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.openBox(
-                                                      index,
-                                                      "editBoxWayDescription"
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(box.way_description)
-                                                )
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        _vm.editBoxWayDescription[index]
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "mb-3 mt-2" },
-                                              [
-                                                _c(
-                                                  "div",
-                                                  {
-                                                    staticClass: "form-inline"
-                                                  },
-                                                  [
-                                                    _c("input", {
-                                                      directives: [
-                                                        {
-                                                          name: "model",
-                                                          rawName: "v-model",
-                                                          value:
-                                                            box.way_description,
-                                                          expression:
-                                                            "box.way_description"
-                                                        }
-                                                      ],
-                                                      staticClass:
-                                                        "form-control form-control-sm mr-1 ml-4 input-boxes",
-                                                      attrs: { type: "text" },
-                                                      domProps: {
-                                                        value:
-                                                          box.way_description
-                                                      },
-                                                      on: {
-                                                        input: function(
-                                                          $event
-                                                        ) {
-                                                          if (
-                                                            $event.target
-                                                              .composing
-                                                          ) {
-                                                            return
-                                                          }
-                                                          _vm.$set(
-                                                            box,
-                                                            "way_description",
-                                                            $event.target.value
-                                                          )
-                                                        }
-                                                      }
-                                                    }),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-success mr-1",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.saveBox(
-                                                              index,
-                                                              "editBoxWayDescription"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-check saverBtn"
-                                                        })
-                                                      ]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-secondary",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.cancelBoxEdit(
-                                                              index,
-                                                              "editBoxWayDescription"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-times"
-                                                        })
-                                                      ]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _vm._m(6, true)
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        !_vm.editBoxGrad[index]
-                                          ? _c(
-                                              "div",
-                                              {
-                                                staticClass: "ref-box-itog",
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.openBox(
-                                                      index,
-                                                      "editBoxGrad"
-                                                    )
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _vm._v(
-                                                  _vm._s(box.way_name) + " "
-                                                ),
-                                                _c(
-                                                  "span",
-                                                  {
-                                                    staticClass: "ref-itog-way"
-                                                  },
-                                                  [_vm._v(_vm._s(box.way))]
-                                                ),
-                                                _c("br"),
-                                                _vm._v("за "),
-                                                _c(
-                                                  "span",
-                                                  { staticClass: "ref-blue" },
-                                                  [
-                                                    _vm._v(
-                                                      _vm._s(box.grad) +
-                                                        " друзей"
-                                                    )
-                                                  ]
-                                                )
-                                              ]
-                                            )
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        _vm.editBoxGrad[index]
-                                          ? _c(
-                                              "div",
-                                              { staticClass: "mb-3 mt-2" },
-                                              [
-                                                _c(
-                                                  "div",
-                                                  {
-                                                    staticClass: "form-inline"
-                                                  },
-                                                  [
-                                                    _c("input", {
-                                                      directives: [
-                                                        {
-                                                          name: "model",
-                                                          rawName: "v-model",
-                                                          value: box.grad,
-                                                          expression: "box.grad"
-                                                        }
-                                                      ],
-                                                      staticClass:
-                                                        "form-control form-control-sm mr-1 ml-4 input-boxes",
-                                                      attrs: { type: "number" },
-                                                      domProps: {
-                                                        value: box.grad
-                                                      },
-                                                      on: {
-                                                        input: function(
-                                                          $event
-                                                        ) {
-                                                          if (
-                                                            $event.target
-                                                              .composing
-                                                          ) {
-                                                            return
-                                                          }
-                                                          _vm.$set(
-                                                            box,
-                                                            "grad",
-                                                            $event.target.value
-                                                          )
-                                                        }
-                                                      }
-                                                    }),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-success mr-1",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.saveBox(
-                                                              index,
-                                                              "editBoxGrad"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-check saverBtn"
-                                                        })
-                                                      ]
-                                                    ),
-                                                    _vm._v(" "),
-                                                    _c(
-                                                      "button",
-                                                      {
-                                                        staticClass:
-                                                          "btn btn-sm btn-secondary",
-                                                        on: {
-                                                          click: function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.cancelBoxEdit(
-                                                              index,
-                                                              "editBoxGrad"
-                                                            )
-                                                          }
-                                                        }
-                                                      },
-                                                      [
-                                                        _c("i", {
-                                                          staticClass:
-                                                            "fas fa-times"
-                                                        })
-                                                      ]
-                                                    )
-                                                  ]
-                                                ),
-                                                _vm._v(" "),
-                                                _vm._m(7, true)
-                                              ]
-                                            )
-                                          : _vm._e()
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      { staticClass: "mt-3" },
-                                      [
-                                        box.kupons.length > 0 && !box.nokupons
-                                          ? [
-                                              _c(
-                                                "button",
-                                                {
-                                                  staticClass:
-                                                    "btn btn-success btn-special",
-                                                  on: {
-                                                    click: function($event) {
-                                                      return _vm.openKuponsEdit(
-                                                        index
-                                                      )
-                                                    }
-                                                  }
-                                                },
-                                                [_vm._v("Промо-коды заданы")]
-                                              )
-                                            ]
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        box.kupons.length > 0 && box.nokupons
-                                          ? [
-                                              _c(
-                                                "button",
-                                                {
-                                                  staticClass:
-                                                    "btn btn-warning btn-special",
-                                                  on: {
-                                                    click: function($event) {
-                                                      return _vm.openKuponsEdit(
-                                                        index
-                                                      )
-                                                    }
-                                                  }
-                                                },
-                                                [
-                                                  _vm._v(
-                                                    "Промо-коды закончились"
-                                                  )
-                                                ]
-                                              )
-                                            ]
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        box.kupons.length == 0
-                                          ? [
-                                              _c(
-                                                "button",
-                                                {
-                                                  staticClass:
-                                                    "btn btn-danger btn-special",
-                                                  on: {
-                                                    click: function($event) {
-                                                      return _vm.openKuponsEdit(
-                                                        index
-                                                      )
-                                                    }
-                                                  }
-                                                },
-                                                [_vm._v("Задайте промо-коды")]
-                                              )
-                                            ]
-                                          : _vm._e()
-                                      ],
-                                      2
-                                    )
-                                  ]
-                                )
-                              }),
-                              0
-                            )
-                          ]
-                        : _vm._e()
-                    ],
-                    2
-                  )
-                ])
-              ]
-            )
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.activeMenu == "promo-codes"
-        ? _c(
-            "section",
-            { staticClass: "promo-codes mx-5" },
-            [
-              _c("kupons-list", {
-                attrs: { order: _vm.order },
-                on: { updateOrderEmit: _vm.updateOrderEmit }
-              })
-            ],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.activeMenu == "statistics"
-        ? _c(
-            "section",
-            { staticClass: "statistics mx-5" },
-            [_c("statistics-order", { attrs: { order: _vm.order } })],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.activeMenu == "payment"
-        ? _c(
-            "section",
-            { staticClass: "payment mx-5" },
-            [_c("payment-order", { attrs: { id: _vm.order.id } })],
-            1
-          )
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.activeMenu == "widget"
-        ? _c(
-            "section",
-            { staticClass: "widget mx-5" },
-            [_c("widget-code", { attrs: { id: _vm.order.id } })],
-            1
-          )
-        : _vm._e(),
       _vm._v(" "),
       _c("footer-block")
     ],
@@ -75694,108 +74572,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "openNavButton" }, [
-      _c(
-        "button",
-        { staticClass: "btn btn-danger", attrs: { onclick: "openNav()" } },
-        [_c("i", { staticClass: "fas fa-bars bar" })]
-      )
+    return _c("div", { staticClass: "b-tender__info-item-subtitle" }, [
+      _vm._v("Количество могил"),
+      _c("br"),
+      _vm._v("в заказе")
     ])
   },
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "col-sm-12 col-md-3 text-center text-md-left pt-3 mt-0 pt-md-4 mt-md-2"
-      },
-      [
-        _c("a", { attrs: { href: "/orders/" } }, [
-          _c("img", {
-            staticClass: "img-fluid",
-            attrs: { src: "/img/cabinet/logo.png", alt: "Gravescare" }
-          })
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      { staticClass: "btn btn-sm btn-danger btn-fly-top-right" },
-      [_c("i", { staticClass: "fas fa-exclamation" })]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-        _c("div", { staticClass: "headUp text-muted" }, [
-          _vm._v("Настройка вознаграждений и условий")
-        ]),
-        _vm._v(" "),
-        _c("small", { staticClass: "text-muted" }, [
-          _vm._v("Кликните на любой текст или ссылку для редактирования.")
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-12 col-md-6" })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c(
-        "small",
-        { staticClass: "form-text text-muted", attrs: { id: "emailHelp" } },
-        [_vm._v("Например, 5% или 500 рублей.")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c(
-        "small",
-        { staticClass: "form-text text-muted", attrs: { id: "emailHelp" } },
-        [_vm._v("С большой буквы, например: Скидка, Бонусы и т.д.")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", [
-      _c(
-        "small",
-        { staticClass: "form-text text-muted", attrs: { id: "emailHelp" } },
-        [_vm._v("Опишите ваше предложение.")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "pb-2" }, [
-      _c(
-        "small",
-        { staticClass: "form-text text-muted", attrs: { id: "emailHelp" } },
-        [_vm._v("Введите количество друзей для достижения цели.")]
-      )
+    return _c("div", { staticClass: "mt-5" }, [
+      _c("div", { staticClass: "text-center" }, [
+        _c(
+          "a",
+          {
+            staticClass: "btn btn-lg btn-secondary",
+            attrs: { href: "/orders" }
+          },
+          [_vm._v("Посмотреть все тендеры")]
+        )
+      ])
     ])
   }
 ]
@@ -75824,197 +74621,442 @@ var render = function() {
     "div",
     { staticClass: "container" },
     [
-      _c("div", { staticClass: "order__header" }, [
-        _c("div", { staticClass: "order__header__bg" }),
-        _vm._v(" "),
-        _c("div", { staticClass: "container px-5" }, [
-          _c("div", { staticClass: "row" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c("div", {
-              staticClass:
-                "d-none d-md-block col-sm-12 col-md-6 order__header__settings__mainblock"
-            }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "col-sm-12 col-md-3 text-center text-md-right pt-4 mt-1"
-              },
-              [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-success",
-                    on: {
-                      click: function($event) {
-                        return _vm.newOrder()
+      _c(
+        "section",
+        [
+          _vm._m(0),
+          _vm._v(" "),
+          _c("div", { staticClass: "card nobrd" }, [
+            _c("div", { staticClass: "card-body table-responsive p-0" }, [
+              _vm.progress != -1
+                ? _c("div", { staticClass: "progress" }, [
+                    _c("div", {
+                      staticClass:
+                        "progress-bar progress-bar-striped progress-bar-animated",
+                      style: "width: " + _vm.progress + "%",
+                      attrs: {
+                        role: "progressbar",
+                        "aria-valuenow": "0",
+                        "aria-valuemin": "0",
+                        "aria-valuemax": "100"
                       }
-                    }
-                  },
-                  [
-                    _vm._v("\r\n                        Новая площадка "),
-                    _c("i", { staticClass: "far fa-plus-square ml-1" })
-                  ]
-                )
-              ]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("section", { staticClass: "mx-5" }, [
-        _vm._m(1),
-        _vm._v(" "),
-        _c("div", { staticClass: "card nobrd" }, [
-          _c("div", { staticClass: "card-body table-responsive p-0" }, [
-            _vm.progress != -1
-              ? _c("div", { staticClass: "progress" }, [
-                  _c("div", {
-                    staticClass:
-                      "progress-bar progress-bar-striped progress-bar-animated",
-                    style: "width: " + _vm.progress + "%",
-                    attrs: {
-                      role: "progressbar",
-                      "aria-valuenow": "0",
-                      "aria-valuemin": "0",
-                      "aria-valuemax": "100"
-                    }
-                  })
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _c(
-              "table",
-              {
-                staticClass:
-                  "table table-striped table-hover table-borderless table-kupon mb-0"
-              },
-              [
-                _vm._m(2),
-                _vm._v(" "),
-                _c(
-                  "tbody",
-                  _vm._l(_vm.orders.data, function(order, index) {
-                    return _c("tr", { key: order.id }, [
-                      _c("td", { staticClass: "text-center" }, [
-                        _vm._v(_vm._s(order.id))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _c("b", [
-                          _c(
-                            "a",
-                            { attrs: { href: "/orders/page/" + order.id } },
-                            [_vm._v(_vm._s(order.name))]
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _c(
-                          "a",
-                          { attrs: { href: order.url, target: "_blank" } },
-                          [
-                            _vm._v(_vm._s(order.url) + " "),
-                            _c("i", { staticClass: "fas fa-external-link-alt" })
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("td", { class: _vm.statusTextColor(order.status) }, [
-                        _vm._v(_vm._s(order.status_stringify))
-                      ]),
-                      _vm._v(" "),
-                      _c("td", { staticClass: "text-center" }, [
-                        _vm._v(_vm._s(order.paid_till_formated) + " "),
-                        !order.is_paied
-                          ? _c(
-                              "span",
-                              {
-                                staticClass: "text-danger ml-1",
-                                attrs: { title: "Необходимо оплатить" }
-                              },
-                              [
-                                _c("i", {
-                                  staticClass: "fas fa-exclamation-triangle"
-                                })
-                              ]
-                            )
-                          : _vm._e()
-                      ]),
-                      _vm._v(" "),
-                      _c("td", { staticClass: "text-center" }, [
-                        _vm._v(_vm._s(order.created_at))
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "td",
+                    })
+                  ])
+                : _vm._e()
+            ])
+          ]),
+          _vm._v(" "),
+          _vm._l(_vm.orders.data, function(order, index) {
+            return _c("div", { key: order.id, staticClass: "card mb-3" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _c("div", { staticClass: "card-title" }, [
+                  _c(
+                    "div",
+                    {
+                      class:
+                        "tendercart-type__status-public " +
+                        order.status_cssclass,
+                      attrs: { id: "" + order.id }
+                    },
+                    [_vm._v(_vm._s(order.status_stringify))]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "orderid__item-settings" }, [
+                    _c("span", { staticClass: "reference _public" }, [
+                      _vm._v("Заказ #" + _vm._s(order.id))
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "b-tender__block--title" }, [
+                    _c("div", { staticClass: "b-tender__title _wide" }, [
+                      _c("span", [_vm._v(_vm._s(order.tarif_stringify))])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  order.user_web_users_name ||
+                  order.user_web_users_phone ||
+                  order.user_web_users_email
+                    ? _c(
+                        "div",
                         {
+                          staticClass: "b-tender__info mt-4",
                           staticStyle: {
-                            "text-align": "center",
-                            "vertical-align": "middle"
+                            border: "1px solid #ff0000",
+                            padding: "20px"
                           }
                         },
                         [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-info",
-                              attrs: { href: "/orders/page/" + order.id }
-                            },
-                            [_c("i", { staticClass: "fa fa-eye" })]
-                          ),
-                          _vm._v(" "),
-                          order.can_delete
+                          order.user_web_users_name
                             ? _c(
-                                "button",
-                                {
-                                  staticClass: "btn btn-danger ml-1",
-                                  on: {
-                                    click: function($event) {
-                                      return _vm.deleteRecord(index)
-                                    }
-                                  }
-                                },
-                                [_c("i", { staticClass: "fa fa-trash" })]
+                                "div",
+                                { staticClass: "b-tender__info-item" },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass: "b-tender__info-item-title"
+                                    },
+                                    [_vm._v("Имя заказчика:")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "b-tender__info-item-text" },
+                                    [_vm._v(_vm._s(order.user_web_users_name))]
+                                  )
+                                ]
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          order.user_web_users_phone
+                            ? _c(
+                                "div",
+                                { staticClass: "b-tender__info-item" },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass: "b-tender__info-item-title"
+                                    },
+                                    [_vm._v("Телефон заказчика:")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "b-tender__info-item-text" },
+                                    [_vm._v(_vm._s(order.user_web_users_phone))]
+                                  )
+                                ]
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          order.user_web_users_email
+                            ? _c(
+                                "div",
+                                { staticClass: "b-tender__info-item" },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass: "b-tender__info-item-title"
+                                    },
+                                    [_vm._v("Почта заказчика:")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    { staticClass: "b-tender__info-item-text" },
+                                    [_vm._v(_vm._s(order.user_web_users_email))]
+                                  )
+                                ]
                               )
                             : _vm._e()
                         ]
                       )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "row mt-4" }, [
+                    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                      _c(
+                        "div",
+                        { staticClass: "b-tender__info-item-subtitle" },
+                        [_vm._v("Состав заказа")]
+                      ),
+                      _vm._v(" "),
+                      _c("div", {
+                        domProps: {
+                          innerHTML: _vm._s(order.ordertxt_stringify)
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-sm-12 col-md-6" }, [
+                      order.tarif == "extended" || order.tarif == "easy"
+                        ? _c("div", [
+                            _vm._m(1, true),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-text" },
+                              [_vm._v(_vm._s(order.number_of_graves))]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      order.order_text_details
+                        ? _c("div", [
+                            _c(
+                              "div",
+                              { staticClass: "b-tender__info-item-subtitle" },
+                              [_vm._v("Комментарий клиента")]
+                            ),
+                            _vm._v(" "),
+                            _c("p", [_vm._v(_vm._s(order.order_text_details))])
+                          ])
+                        : _vm._e()
                     ])
-                  }),
-                  0
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _vm.orders.length >= _vm.limit
-            ? _c("div", { staticClass: "card-footer" }, [
-                _c(
-                  "div",
-                  { staticClass: "overflow-auto" },
-                  [
-                    _c("pagination", {
-                      staticClass: "mb-0",
-                      attrs: {
-                        data: _vm.orders,
-                        limit: _vm.limit,
-                        "show-disabled": _vm.showDisabled,
-                        size: _vm.size,
-                        align: _vm.align
-                      },
-                      on: { "pagination-change-page": _vm.getResults }
-                    })
-                  ],
-                  1
-                )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "b-tender__info mt-4" }, [
+                    order.city.pagetitle
+                      ? _c("div", { staticClass: "b-tender__info-item" }, [
+                          _c(
+                            "div",
+                            { staticClass: "b-tender__info-item-title" },
+                            [_vm._v("Город:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "b-tender__info-item-text" },
+                            [_vm._v(_vm._s(order.city.pagetitle))]
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    order.virtual.graveyard_name
+                      ? _c("div", { staticClass: "b-tender__info-item" }, [
+                          _c(
+                            "div",
+                            { staticClass: "b-tender__info-item-title" },
+                            [_vm._v("Кладбище:")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "b-tender__info-item-text" },
+                            [_vm._v(_vm._s(order.virtual.graveyard_name))]
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "b-tender__info-item" }, [
+                      _c("div", { staticClass: "b-tender__info-item-title" }, [
+                        _vm._v("Опубликован")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "b-tender__info-item-text" }, [
+                        _vm._v(_vm._s(order.updatetime))
+                      ]),
+                      _vm._v(" "),
+                      _c("small", { staticClass: "text-muted" }, [
+                        _vm._v("время по Москве")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "b-tender__info-item" }, [
+                      _c("div", { staticClass: "b-tender__info-item-title" }, [
+                        _vm._v("Бюджет:")
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "b-tender__info-item-text" }, [
+                        _vm._v("от " + _vm._s(order.itogsum) + " "),
+                        _c("span", { staticClass: "rub _bold" })
+                      ]),
+                      _vm._v(" "),
+                      _c("small", { staticClass: "text-muted" }, [
+                        _vm._v("по согласованию")
+                      ])
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "card-text mb-3" }, [
+                  !order.can_access
+                    ? _c("small", { staticClass: "text-muted" }, [
+                        _vm._v(
+                          "Контакт для связи с заказчиком доступен только зарегистрированным пользователям."
+                        )
+                      ])
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                order.can_delete
+                  ? _c(
+                      "div",
+                      { staticClass: "text-center text-md-left mb-3" },
+                      [
+                        _vm._v(
+                          "\r\n                    Смена статусов: \r\n                    "
+                        ),
+                        order.status != 3
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-sm btn-secondary mb-2",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.changeStatus(index, 3)
+                                  }
+                                }
+                              },
+                              [
+                                order.virtual.reaction
+                                  ? _c("i", {
+                                      staticClass: "fas fa-spinner fa-spin mr-2"
+                                    })
+                                  : _vm._e(),
+                                _vm._v("Вернуть прием заявок")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        order.status != 4
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-sm btn-info mb-2",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.changeStatus(index, 4)
+                                  }
+                                }
+                              },
+                              [
+                                order.virtual.reaction
+                                  ? _c("i", {
+                                      staticClass: "fas fa-spinner fa-spin mr-2"
+                                    })
+                                  : _vm._e(),
+                                _vm._v("Исполнитель выбран!")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        order.status != 9
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-sm btn-success mb-2",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.changeStatus(index, 9)
+                                  }
+                                }
+                              },
+                              [
+                                order.virtual.reaction
+                                  ? _c("i", {
+                                      staticClass: "fas fa-spinner fa-spin mr-2"
+                                    })
+                                  : _vm._e(),
+                                _vm._v("Заказ успешно завершен!")
+                              ]
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        order.status != "canceled"
+                          ? _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-sm btn-danger mb-2",
+                                on: {
+                                  click: function($event) {
+                                    return _vm.changeStatus(index, "canceled")
+                                  }
+                                }
+                              },
+                              [
+                                order.virtual.reaction
+                                  ? _c("i", {
+                                      staticClass: "fas fa-spinner fa-spin mr-2"
+                                    })
+                                  : _vm._e(),
+                                _vm._v("Заказ отменен")
+                              ]
+                            )
+                          : _vm._e()
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                order.reacted && order.can_access
+                  ? _c("div", { staticClass: "text-center text-md-left" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-success",
+                          attrs: { disabled: "" }
+                        },
+                        [_vm._v("Вы уже откликнулись!")]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                !order.reacted && order.can_access && order.status == 3
+                  ? _c("div", { staticClass: "text-center text-md-left" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-success",
+                          on: {
+                            click: function($event) {
+                              return _vm.reactNow(index)
+                            }
+                          }
+                        },
+                        [
+                          order.virtual.reaction
+                            ? _c("i", {
+                                staticClass: "fas fa-spinner fa-spin mr-2"
+                              })
+                            : _vm._e(),
+                          _vm._v("Откликнуться на заказ")
+                        ]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                !order.can_access && order.status == 3
+                  ? _c("div", { staticClass: "text-center text-md-left" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-success mb-2 mx-2",
+                          attrs: { href: "/register" }
+                        },
+                        [_vm._v("Зарегистрироваться и откликнуться!")]
+                      ),
+                      _vm._v(" или "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-primary mb-2 mx-2",
+                          attrs: { href: "/" }
+                        },
+                        [_vm._v("Войти и откликнуться!")]
+                      )
+                    ])
+                  : _vm._e()
               ])
-            : _vm._e()
-        ])
-      ]),
+            ])
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "card nobrd" }, [
+            _c("div", { staticClass: "card-footer" }, [
+              _c(
+                "div",
+                { staticClass: "overflow-auto" },
+                [
+                  _c("pagination", {
+                    staticClass: "mb-0",
+                    attrs: {
+                      data: _vm.orders,
+                      limit: _vm.limit,
+                      "show-disabled": _vm.showDisabled,
+                      size: _vm.size,
+                      align: _vm.align
+                    },
+                    on: { "pagination-change-page": _vm.getResults }
+                  })
+                ],
+                1
+              )
+            ])
+          ])
+        ],
+        2
+      ),
       _vm._v(" "),
       _c("footer-block"),
       _vm._v(" "),
@@ -76034,138 +75076,27 @@ var render = function() {
           _c(
             "div",
             {
-              staticClass: "modal-dialog modal-dialog-centered",
+              staticClass: "modal-dialog modal-lg modal-dialog-centered",
               attrs: { role: "document" }
             },
             [
               _c("div", { staticClass: "modal-content" }, [
-                _vm._m(3),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "modal-header" }, [
                   _c(
-                    "form",
+                    "h5",
                     {
-                      staticClass: "needs-validation",
-                      attrs: { id: "settingForm", novalidate: "" }
+                      staticClass: "modal-title",
+                      attrs: { id: "exampleModalLongTitle" }
                     },
-                    [
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col-md-12" }, [
-                          _c("label", { attrs: { for: "name" } }, [
-                            _vm._v("Наименование рекламной площадки")
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.editOrder.name,
-                                expression: "editOrder.name"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: {
-                              type: "text",
-                              required: "",
-                              id: "name",
-                              placeholder: "Моя первая рекламная кампания"
-                            },
-                            domProps: { value: _vm.editOrder.name },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.editOrder,
-                                  "name",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "form-row" }, [
-                        _c("div", { staticClass: "form-group col-md-12" }, [
-                          _c("label", { attrs: { for: "url" } }, [
-                            _vm._v(
-                              "Адрес сайта (без слеша на конце и протоколом вначале)"
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.editOrder.url,
-                                expression: "editOrder.url"
-                              }
-                            ],
-                            staticClass: "form-control",
-                            attrs: {
-                              type: "text",
-                              required: "",
-                              id: "url",
-                              placeholder: "https://domain.com"
-                            },
-                            domProps: { value: _vm.editOrder.url },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.editOrder,
-                                  "url",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          })
-                        ])
-                      ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "modal-footer" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-secondary",
-                      attrs: { type: "button", "data-dismiss": "modal" }
-                    },
-                    [_vm._v("Закрыть")]
+                    [_vm._v("Заказ №" + _vm._s(_vm.editOrder.id))]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-success",
-                      attrs: { type: "button" },
-                      on: {
-                        click: function($event) {
-                          return _vm.createOrder()
-                        }
-                      }
-                    },
-                    [
-                      _vm.addingNew
-                        ? _c("span", {
-                            staticClass: "spinner-border spinner-border-sm",
-                            attrs: { role: "status", "aria-hidden": "true" }
-                          })
-                        : _vm._e(),
-                      _vm._v(
-                        "\r\n                    Сохранить\r\n                "
-                      )
-                    ]
-                  )
-                ])
+                  _vm._m(2)
+                ]),
+                _vm._v(" "),
+                _vm._m(3),
+                _vm._v(" "),
+                _vm._m(4)
               ])
             ]
           )
@@ -76180,31 +75111,9 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "col-sm-12 col-md-3 text-center text-md-left pt-3 mt-0 pt-md-4 mt-md-2"
-      },
-      [
-        _c("a", { attrs: { href: "/orders/" } }, [
-          _c("img", {
-            staticClass: "img-fluid",
-            attrs: { src: "/img/cabinet/logo.png", alt: "Gravescare" }
-          })
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row my-3" }, [
+    return _c("div", { staticClass: "row mt-5 mb-4" }, [
       _c("div", { staticClass: "col-sm-12 col-md-6" }, [
-        _c("div", { staticClass: "headUp text-muted" }, [
-          _vm._v("Мои площадки")
-        ])
+        _c("div", { staticClass: "headUp" }, [_vm._v("Каталог тендеров")])
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "col-sm-12 col-md-6" })
@@ -76214,21 +75123,44 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", { staticClass: "text-center" }, [_vm._v("ID")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Наименование")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("URL")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Статус")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Активна до")]),
-        _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Создана")]),
-        _vm._v(" "),
-        _c("th")
+    return _c("div", { staticClass: "b-tender__info-item-subtitle" }, [
+      _vm._v("Количество могил"),
+      _c("br"),
+      _vm._v("в заказе")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-sm-12" }, [
+          _c("div", { staticStyle: { width: "100%", height: "400px" } }, [
+            _c("div", {
+              staticClass: "yandex-map ltr",
+              staticStyle: { width: "100%", height: "400px" },
+              attrs: { id: "yandex-map-order", "data-lang": "ru_RU" }
+            })
+          ])
+        ])
       ])
     ])
   },
@@ -76236,24 +75168,14 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        { staticClass: "modal-title", attrs: { id: "exampleModalLongTitle" } },
-        [_vm._v("Создание новой площадки")]
-      ),
-      _vm._v(" "),
+    return _c("div", { staticClass: "modal-footer" }, [
       _c(
         "button",
         {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
+          staticClass: "btn btn-secondary",
+          attrs: { type: "button", "data-dismiss": "modal" }
         },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+        [_vm._v("Закрыть")]
       )
     ])
   }
@@ -89538,7 +88460,7 @@ module.exports = function(module) {
 /*!*****************************!*\
   !*** ./resources/js/API.js ***!
   \*****************************/
-/*! exports provided: WEP_URL_ORDERS, API_GET_ORDERS, API_CRUD_ORDER, API_POST_SEND_QUESTION */
+/*! exports provided: WEP_URL_ORDERS, API_GET_ORDERS, API_CRUD_ORDER, API_SEND_ORDER_REACTION, API_POST_SEND_QUESTION */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -89546,11 +88468,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "WEP_URL_ORDERS", function() { return WEP_URL_ORDERS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "API_GET_ORDERS", function() { return API_GET_ORDERS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "API_CRUD_ORDER", function() { return API_CRUD_ORDER; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "API_SEND_ORDER_REACTION", function() { return API_SEND_ORDER_REACTION; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "API_POST_SEND_QUESTION", function() { return API_POST_SEND_QUESTION; });
 // const HOST = ''
 var WEP_URL_ORDERS = '/orders';
 var API_GET_ORDERS = '/orders/list';
 var API_CRUD_ORDER = '/orders';
+var API_SEND_ORDER_REACTION = '/orders/reaction';
 var API_POST_SEND_QUESTION = '/send-question';
 
 /***/ }),
