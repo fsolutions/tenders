@@ -2697,7 +2697,8 @@ __webpack_require__.r(__webpack_exports__);
           choice_edit: 0,
           reaction: false,
           map: false
-        }
+        },
+        opened_order: 0
       }
     };
   },

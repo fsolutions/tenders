@@ -63,6 +63,25 @@ class NewOrderPublished extends Notification
             $numberOfGraves = "*Количество могил на обработку: * " . $order->number_of_graves . "\n";
         }
 
+        $userInfo = '';
+
+        if ($order->opened_order == 1) {
+            if ($order->user_web_users_name != '') {
+                $userInfo .= '*Имя заказчика: *' . $order->user_web_users_name . "\n";
+            }
+            if ($order->user_web_users_phone != '') {
+                $userInfo .= '*Телефон заказчика: *' . $order->user_web_users_phone . "\n";
+            }
+            if ($order->user_web_users_phone != '') {
+                $userInfo .= '*Email заказчика: *' . $order->user_web_users_email . "\n";
+            }
+
+            if ($userInfo != '') {
+                $userInfo = '*Открытый тендер!*' . "\n" . $userInfo;
+                $userInfo .= "\n";
+            }
+        }
+
         return TelegramMessage::create()
             ->to('-1001443430812')
             ->content("*Новый заказ #" . $order->id . "*\n\n" .
@@ -71,6 +90,7 @@ class NewOrderPublished extends Notification
                 $cityInfo . "\n" .
                 $graveyardInfo . "\n" .
                 $numberOfGraves .
+                $userInfo .
                 $costInfo . "\n\n")
             ->button('Посмотреть заказ', 'https://tenders.gravescare.com/orders/page/' . $order->id);
     }

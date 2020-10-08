@@ -51,6 +51,7 @@ class Order extends Model
     'user_web_users_email',
     'order_txt',              // Serialized
     'order_city_id',
+    'order_economic_region_id',
     'order_object_id',
     'order_object_name_ext',
     'order_man_name',
@@ -63,7 +64,9 @@ class Order extends Model
     'tarif',
     'itogsum',
     'sended_to_telegram',
+    'sended_to_whatsup',
     'status',
+    'opened_order'
   ];
 
   protected $appends = ['status_stringify', 'tarif_stringify', 'status_cssclass', 'ordertxt_stringify', 'can_delete', 'can_access'];
@@ -86,6 +89,28 @@ class Order extends Model
     'created_at' => 'datetime:d.m.Y H:i',
   ];
 
+  /**
+   * Economic region by id array of names
+   *
+   * @return array
+   */
+  public static function getEconomicRegions()
+  {
+    return [
+      0 => ['name' => 'Восточно-Сибирский', 'chatId' => '79262810811-1602278631@g.us'],
+      1 => ['name' => 'Волго-Вятский', 'chatId' => '79262810811-1602279305@g.us'],
+      2 => ['name' => 'Дальневосточный', 'chatId' => '79262810811-1602279479@g.us'],
+      3 => ['name' => 'Западно-Сибирский', 'chatId' => '79262810811-1602279727@g.us'],
+      4 => ['name' => 'Калининградский', 'chatId' => '79262810811-1602280610@g.us'],
+      5 => ['name' => 'Поволжский', 'chatId' => '79262810811-1602280726@g.us'],
+      6 => ['name' => 'Северный', 'chatId' => '79262810811-1602281007@g.us'],
+      7 => ['name' => 'Северо-Западный', 'chatId' => '79262810811-1602281213@g.us'],
+      8 => ['name' => 'Северо-Кавказский', 'chatId' => '79262810811-1602281372@g.us'],
+      9 => ['name' => 'Уральский', 'chatId' => '79262810811-1602281473@g.us'],
+      10 => ['name' => 'Центрально-Чернозёмный', 'chatId' => '79262810811-1602281572@g.us'],
+      11 => ['name' => 'Центральный', 'chatId' => '79262810811-1602281734@g.us'],
+    ];
+  }
 
   /**
    * Get stringify order txt

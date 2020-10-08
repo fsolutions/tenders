@@ -224,7 +224,8 @@
                 choice_edit: 0,
                 reaction: false,
                 map: false,
-            }
+            },
+            opened_order: 0
         },        
       }
     },

@@ -35,6 +35,7 @@ class ModxSiteContent extends Model
      */
     protected $visible = [
         'pagetitle',
-        'introtext'
+        'introtext',
+        'parent'
     ];
 }

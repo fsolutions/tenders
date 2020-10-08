@@ -57,6 +57,9 @@
                                             <li class="nav-item">
                                                 <a href="#" class="nav-link askUsNow">Задать вопрос</a>
                                             </li>
+                                            <!-- <li class="nav-item">
+                                                <a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="nav-link" target="_blank"><img src="https://gravescare.com/assets/templates/graves/img/telegram_zakaz.png" style="height: 54px; width: auto;" alt="Подписка на заказы в группе Telegram"></a>
+                                            </li> -->
                                         </ul>
                                     </div>
                                 </nav>
@@ -66,7 +69,7 @@
                                 <a href="/register" class="btn btn-success">Участвовать в тендерах</a>
                                 <div style="line-height: 13px;" class="pt-1 pb-3"><small class="text-muted">Приглашаем <b>компании и частные лица</b> к участию в тендерах на ритуальные услуги!</small></div>
                                 @else
-                                <a href="https://t.me/gravescare" class="btn btn-info" target="_blank">Тендеры в Telegram <i class="fab fa-telegram-plane"></i></a>
+                                <a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="btn btn-info" target="_blank">Тендеры в Telegram <i class="fab fa-telegram-plane"></i></a>
                                 <div style="line-height: 13px;" class="pt-1 pb-3"><small class="text-muted">Удобный формат просмотра тендеров на ритуальные услуги!</small></div>
                                 @endif
                             </div>

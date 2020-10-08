@@ -76,6 +76,17 @@ class OrderController extends Controller
                 'user_web_users_email',
             ]);
             //  Or, $this->setVisible(['example_key']), if this works better for you.
+        } else {
+            foreach ($orders as $index => $order) {
+                if ($order->opened_order == 1) {
+                    $order = $order->makeVisible([
+                        // 'user_web_users_id',
+                        'user_web_users_name',
+                        'user_web_users_phone',
+                        'user_web_users_email',
+                    ]);
+                }
+            }
         }
 
         return $orders;
@@ -106,6 +117,13 @@ class OrderController extends Controller
         if (Auth::user() && Auth::user()->hasRole('administrator')) {
             $order = $order->makeVisible([
                 'user_web_users_id',
+                'user_web_users_name',
+                'user_web_users_phone',
+                'user_web_users_email',
+            ]);
+        } else if ($order->opened_order == 1) {
+            $order = $order->makeVisible([
+                // 'user_web_users_id',
                 'user_web_users_name',
                 'user_web_users_phone',
                 'user_web_users_email',

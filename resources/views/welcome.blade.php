@@ -101,7 +101,7 @@
                     <a href="{{ route('register') }}" class="underlineHover bold">Добавить свою организацию</a>
                     @endif
                     <a href="/orders" class="underlineHover uHred bold">Посмотреть текущие тендеры (ДЕМО-Доступ)</a>
-                    <!-- <a href="https://t.me/gravescare" target="_blank">Посмотреть текущие тендеры в Telegram <i class="fab fa-telegram-plane"></i></a> -->
+                    <p class="text-center mt-3"><a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="btn btn-info" style="color: #FFF;" target="_blank">Отслеживать заказы в Telegram <i class="fab fa-telegram-plane"></i></a></p>
                     @if (Route::has('password.request'))
                     <a class="underlineHover" href="{{ route('password.request') }}">
                         {{ __('Забыли свой пароль?') }}

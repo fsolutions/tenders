@@ -67,6 +67,15 @@ class SendOrderToTelegramCommand extends Command
         $orderInfoForTelegramString .= "- " . $orderrow["name"] . "\n";
       }
 
+      if ($order->opened_order == 1) {
+        $order = $order->makeVisible([
+          // 'user_web_users_id',
+          'user_web_users_name',
+          'user_web_users_phone',
+          'user_web_users_email',
+        ]);
+      }
+
       $order->notify(new \App\Notifications\NewOrderPublished($graveyardName, $orderInfoForTelegramString));
       $order->sended_to_telegram = 1;
       $order->save();
