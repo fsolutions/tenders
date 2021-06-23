@@ -28,13 +28,21 @@ Route::get('orders/list', 'API\OrderController@list')->name("orderList");
 Route::get('orders/page/{id}', 'API\OrderController@showPage')->name("oneOrderPage");
 
 Route::group(['middleware' => ['auth']], function () {
+
     Route::post('orders', 'API\OrderController@store');
     Route::delete('orders/{id}', 'API\OrderController@destroy');
     Route::put('orders/{id}', 'API\OrderController@update');
     Route::get('orders/{id}', 'API\OrderController@show')->name("oneOrder");
     Route::get('orders/reaction/{id}', 'API\OrderController@sendReaction');
+    Route::get('api/services', 'API\ListsController@servicesIndex');
+    Route::get('api/cities', 'API\ListsController@citiesIndex');
+    Route::get('api/graveyards/{city_id}', 'API\ListsController@graveyardsIndex');
 
     Route::post('send-question', 'API\QuestionController@sendMessage');
+
+    Route::get('order-create', function () {
+        return view('orders.create');
+    });
 });
 
 Route::get('/logout', function () {

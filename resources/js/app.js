@@ -29,6 +29,7 @@ Vue.component('pagination', require('laravel-vue-pagination'));
 Vue.component('home-component', require('./components/HomeComponent.vue').default);
 Vue.component('orders', require('./components/OrderComponent.vue').default);
 Vue.component('one-order', require('./components/OneOrderComponent.vue').default);
+Vue.component('order-create', require('./components/OrderCreate.vue').default);
 Vue.component('footer-block', require('./components/Footer.vue').default);
 
 /**

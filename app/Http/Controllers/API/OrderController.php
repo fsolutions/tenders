@@ -8,6 +8,7 @@ use Validator;
 use App\Model\Order;
 use App\Mail\SendReaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -29,6 +30,23 @@ class OrderController extends Controller
     public function index()
     {
         return view('orders.orders');
+    }
+
+    /**
+     * Load service list
+     *
+     * @return void
+     */
+    public function servicesIndex()
+    {
+        $services = DB::table('modx_site_content')
+            ->where('parent', 21370)
+            ->where('published', 1)
+            ->orderBy('modx_site_content.pagetitle')
+            ->get(['id', 'pagetitle as name']);
+
+
+        return $services;
     }
 
     /**
@@ -150,7 +168,18 @@ class OrderController extends Controller
         // }
 
         $requestData = $request->all();
-        $requestData['user_id'] = $this->userId;
+
+        $requestData['paymentid'] = '';
+        $requestData['paymenturl'] = '';
+
+        $requestData['order_txt'] = serialize($requestData['order_txt']);
+        $requestData['updatetime'] = time();
+        $requestData['order_start'] = time();
+
+        if (!isset($requestData['order_object_name_ext']) || $requestData['order_object_name_ext'] == '') {
+            $requestData['order_object_name_ext'] = '';
+        }
+        // $requestData['user_id'] = $this->userId;
 
         $order = Order::create($requestData);
 

@@ -49,6 +49,8 @@ class Order extends Model
     'user_web_users_name',
     'user_web_users_phone',
     'user_web_users_email',
+    'paymentid',
+    'paymenturl',
     'order_txt',              // Serialized
     'order_city_id',
     'order_economic_region_id',
@@ -66,7 +68,8 @@ class Order extends Model
     'sended_to_telegram',
     'sended_to_whatsup',
     'status',
-    'opened_order'
+    'opened_order',
+    'updatetime'
   ];
 
   protected $appends = ['status_stringify', 'tarif_stringify', 'status_cssclass', 'ordertxt_stringify', 'can_delete', 'can_access'];

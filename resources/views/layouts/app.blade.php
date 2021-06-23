@@ -57,6 +57,11 @@
                                             <li class="nav-item">
                                                 <a href="#" class="nav-link askUsNow">Задать вопрос</a>
                                             </li>
+                                            @if (Auth::check() && Auth::user()->id == 1)
+                                            <li class="nav-item">
+                                                <a href="/order-create" class="nav-link">Создать заказ</a>
+                                            </li>
+                                            @endif
                                             <!-- <li class="nav-item">
                                                 <a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="nav-link" target="_blank"><img src="https://gravescare.com/assets/templates/graves/img/telegram_zakaz.png" style="height: 54px; width: auto;" alt="Подписка на заказы в группе Telegram"></a>
                                             </li> -->
