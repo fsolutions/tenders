@@ -1,5 +1,6 @@
 <?php
 
+use App\Model\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -24,8 +25,11 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/orders', 'API\OrderController@index')->name("orderIndex");
+Route::get('/orders/client/act/{id}', 'API\OrderController@orderClientAct')->name("orderClientAct");
+Route::get('/orders/client/{id}', 'API\OrderController@orderClientNaryad')->name("orderClientNaryad");
 Route::get('orders/list', 'API\OrderController@list')->name("orderList");
 Route::get('orders/page/{id}', 'API\OrderController@showPage')->name("oneOrderPage");
+Route::put('orders/sign/{id}', 'API\OrderController@updatePart');
 
 Route::group(['middleware' => ['auth']], function () {
 
@@ -43,6 +47,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('order-create', function () {
         return view('orders.create');
     });
+    Route::get('order-edit/{id}', 'API\OrderController@orderEdit')->name("orderEdit");
 });
 
 Route::get('/logout', function () {

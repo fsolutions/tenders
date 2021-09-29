@@ -13,6 +13,15 @@ window.Vue = require('vue');
 
 import store from './store.js'
 
+const moment = require('moment')
+require('moment/locale/ru')
+
+Vue.use(require('vue-moment'), {
+    moment
+})
+
+Vue.prototype.moment = moment
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -29,8 +38,49 @@ Vue.component('pagination', require('laravel-vue-pagination'));
 Vue.component('home-component', require('./components/HomeComponent.vue').default);
 Vue.component('orders', require('./components/OrderComponent.vue').default);
 Vue.component('one-order', require('./components/OneOrderComponent.vue').default);
+Vue.component('one-client-order', require('./components/ClientOrderNaryadActComponent.vue').default);
 Vue.component('order-create', require('./components/OrderCreate.vue').default);
 Vue.component('footer-block', require('./components/Footer.vue').default);
+
+
+Vue.filter('formattedNamedDate', function (date) {
+    let formatDate = moment(date, 'DD.MM.YYYY').format('MMMM YYYY')
+
+    if (formatDate == 'Invalid date') return "Не указана"
+    return formatDate
+})
+Vue.filter('formattedDate', function (date) {
+    let formatDate = moment(date).format('DD.MM.YYYY')
+
+    if (formatDate == 'Invalid date') return "Не указана"
+    return formatDate
+})
+Vue.filter('formattedDateTime', function (date) {
+    let formatDate = moment(date).format('DD.MM.YYYY HH:mm')
+
+    if (formatDate == 'Invalid date') return "Не указана"
+    return formatDate
+})
+
+Vue.filter('toCurrency', function (value) {
+    if (typeof value !== "number") {
+        return value
+    }
+    let formatter = new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: 0
+    })
+    return formatter.format(value)
+})
+Vue.filter('toShortCurrency', function (value) {
+    if (typeof value !== "number") {
+        return value
+    }
+    let formatter = new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    })
+    return formatter.format(value)
+})
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

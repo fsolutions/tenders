@@ -60,11 +60,30 @@ class SendOrderToTelegramCommand extends Command
         $graveyardName = $order->graveyard->pagetitle;
       }
 
-      $orderInfoForTelegram = unserialize($order->order_txt);
+      $orderServices = ['data' => [], 'itog' => 0];
+
+      // Если есть услуги в новом формате
+      if (isset($order->order_services)) {
+        $orderServices = json_decode($order->order_services);
+      }
+
       $orderInfoForTelegramString = "";
 
-      foreach ($orderInfoForTelegram as $orderrow) {
-        $orderInfoForTelegramString .= "- " . $orderrow["name"] . "\n";
+      // Если работаем со старым форматом
+      if (!isset($orderServices->data) || count($orderServices->data) == 0) {
+        $orderInfoForTelegram = unserialize($order->order_txt);
+
+        foreach ($orderInfoForTelegram as $orderrow) {
+          $orderInfoForTelegramString .= "- " . $orderrow["name"] . "\n";
+        }
+      } else {
+        foreach ($orderServices->data as $orderrow) {
+          $orderInfoForTelegramString .= "- " . $orderrow->name . "\n";
+        }
+      }
+
+      if ($orderInfoForTelegramString == '') {
+        $orderInfoForTelegramString = 'Уточняйте у нашего менеджера';
       }
 
       if ($order->opened_order == 1) {

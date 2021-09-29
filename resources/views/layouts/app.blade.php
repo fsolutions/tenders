@@ -49,7 +49,7 @@
                                     <div class="collapse navbar-collapse" id="navbarNav">
                                         <ul class="navbar-nav mr-auto pt-4 mt-1">
                                             <li class="nav-item active">
-                                                <a href="/orders" class="nav-link" target="_blank">Каталог тендеров</a>
+                                                <a href="/orders" class="nav-link">Каталог тендеров</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a href="https://gravescare.com/" class="nav-link" target="_blank">Основной сайт</a>

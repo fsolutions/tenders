@@ -49,6 +49,7 @@ class Order extends Model
     'user_web_users_name',
     'user_web_users_phone',
     'user_web_users_email',
+    'user_web_passport',
     'paymentid',
     'paymenturl',
     'order_txt',              // Serialized
@@ -65,20 +66,35 @@ class Order extends Model
     'order_start',
     'tarif',
     'itogsum',
+    'itogsum_for_client',
+    'skidka_for_client',
     'sended_to_telegram',
     'sended_to_whatsup',
     'status',
     'opened_order',
-    'updatetime'
+    'updatetime',
+    'manager_id',
+    'order_services',
+    'start_date_of_work',
+    'end_date_of_work',
+    'oriental_days_for_work',
+    'type_of_order_object',   // ['Могила', 'Квартира', 'Помещение', 'Другое']
+    'address_of_order_object',
+    'final_comment',
+    'datetime_of_client_signed_the_start',
+    'datetime_of_client_signed_the_end',
+    'datetime_of_ispolnitel_signed_the_start',
+    'datetime_of_ispolnitel_signed_the_end',
   ];
 
-  protected $appends = ['status_stringify', 'tarif_stringify', 'status_cssclass', 'ordertxt_stringify', 'can_delete', 'can_access'];
+  protected $appends = ['status_stringify', 'tarif_stringify', 'status_cssclass', 'ordertxt_stringify', 'order_services_decode', 'can_delete', 'can_access'];
 
   protected $hidden = [
     'user_web_users_id',
     'user_web_users_name',
     'user_web_users_phone',
-    'user_web_users_email'
+    'user_web_users_email',
+    'user_web_passport'
   ];
 
   /**
@@ -135,6 +151,16 @@ class Order extends Model
     return $orderfinal;
   }
 
+  /**
+   * Get decode order services
+   *
+   * @param  string  $value
+   * @return string
+   */
+  public function getOrderServicesDecodeAttribute()
+  {
+    return (isset($this->order_services) && is_string($this->order_services)) ? json_decode($this->order_services) : ['data' => [], 'itog' => 0];
+  }
 
   /**
    * Get stringify tarif
@@ -226,6 +252,9 @@ class Order extends Model
         break;
       case '11':
         $statusString = 'Отменен администрацией';
+        break;
+      case '12':
+        $statusString = 'Ожидает утверждения клиента';
         break;
     }
 
@@ -340,6 +369,16 @@ class Order extends Model
   public function graveyard()
   {
     return $this->hasOne('App\Model\ModxSiteContent', 'id', 'order_object_id');
+  }
+
+  /**
+   * Order Manager
+   * 
+   * @return mixed
+   */
+  public function manager()
+  {
+    return $this->hasOne('App\User', 'id', 'manager_id');
   }
 
   /**

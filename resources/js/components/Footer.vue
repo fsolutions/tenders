@@ -6,6 +6,9 @@
         </div>
         <div class="col-sm-12 col-md-4 text-center">
             <!-- <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a> -->
+            <a href="/docs/oferta-client.docx" target="_blank">Оферта Заказчика</a><br>
+            <a href="/docs/oferta-agent.docx" target="_blank">Оферта Агента</a><br>
+            <a href="https://gravescare.com/politika-konfidencialnosti/" target="_blank">Политика конфиденциальности</a>            
         </div>
         <div class="col-sm-12 col-md-4 text-left text-md-right pt-2">
             <a href="#" class="order__footer__supportbtn" id="footerSupport" @click="newQuestion()">Поддержка</a>

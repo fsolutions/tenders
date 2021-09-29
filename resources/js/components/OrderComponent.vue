@@ -17,17 +17,18 @@
             <!-- /.card-body -->
         </div>
 
-        <div class="card mb-3" v-for="(order, index)  in orders.data" :key="order.id">
+        <div class="card mb-3" v-for="(order, index) in orders.data" :key="order.id">
             <div class="card-body">
                 <div class="card-title">
                     <div :class="`tendercart-type__status-public ${order.status_cssclass}`" :id="`${order.id}`">{{order.status_stringify}}</div>
                     <div class="orderid__item-settings">
 					    <span class="reference _public">Заказ #{{order.id}}</span>
+                        <a :href="`/order-edit/${order.id}`" class="btn btn-sm btn-warning ml-4" v-if="order.can_delete"><i class="fas fa-edit"></i></a>
 					</div>                    
                     <div class="b-tender__block--title">
                         <div class="b-tender__title _wide">
                             <!-- <a :href="`/orders/page/${order.id}`">{{order.tarif_stringify}}</a> -->
-                            <span>{{order.tarif_stringify}}</span>
+                            <span>{{order.tarif_stringify}}</span> 
                         </div>
                     </div>
 
@@ -49,7 +50,16 @@
                     <div class="row mt-4">
                         <div class="col-sm-12 col-md-6">
                             <div class="b-tender__info-item-subtitle">Состав заказа</div>
-                            <div v-html="order.ordertxt_stringify"></div>
+                            <template v-if="order.order_services_decode && order.order_services_decode.data && order.order_services_decode.data.length > 0">
+                                <ul style="padding-left: 15px;">
+                                    <li class="usl" v-for="(service, index) in order.order_services_decode.data" :key="index">
+                                        {{ service.name }}
+                                    </li>
+                                </ul>
+                            </template>
+                            <template v-else>
+                                <div v-html="order.ordertxt_stringify"></div>
+                            </template>
                         </div>
                         <div class="col-sm-12 col-md-6">
                             <div v-if="order.tarif == 'extended' || order.tarif == 'easy'">
@@ -88,15 +98,33 @@
                 <div class="card-text mb-3">
                     <small class="text-muted" v-if="!order.can_access">Контакт для связи с заказчиком доступен только зарегистрированным пользователям.</small>
                 </div>
-                <div class="text-center text-md-left mb-3" v-if="order.can_delete">
+                <div class="text-center text-md-left mb-3 left-border-line" v-if="order.can_delete">
                     Смена статусов: 
                     <button @click="changeStatus(index, 3)" class="btn btn-sm btn-secondary mb-2" v-if="order.status != 3"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Вернуть прием заявок</button>
                     <button @click="changeStatus(index, 4)" class="btn btn-sm btn-info mb-2" v-if="order.status != 4"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Исполнитель выбран!</button>
                     <button @click="changeStatus(index, 9)" class="btn btn-sm btn-success mb-2" v-if="order.status != 9"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Заказ успешно завершен!</button>
                     <button @click="changeStatus(index, 'canceled')" class="btn btn-sm btn-danger mb-2" v-if="order.status != 'canceled'"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Заказ отменен</button>
                 </div>
+                <div class=" text-center text-md-left mb-3 left-border-line" v-if="order.can_delete">
+                    Заказ-наряд: 
+                    <a :href="'/orders/client/' + order.id" target="_blank" class="btn btn-sm btn-secondary mb-2">Для клиента</a>
+                    <button class="btn btn-sm btn-secondary mb-2" disabled>Для агента</button>
+                    <div>
+                        <span class="reference _public">Клиент подписал на старт работ: {{order.datetime_of_client_signed_the_start | formattedDateTime}}</span><br>
+                        <span class="reference _public">Клиент подписал на завершение работ: {{order.datetime_of_client_signed_the_end | formattedDateTime}}</span>
+                    </div>
+                </div>
+                <div class=" text-center text-md-left mb-3 left-border-line" v-if="order.can_delete">
+                    Акты: 
+                    <a :href="'/orders/client/act/' + order.id" target="_blank" class="btn btn-sm btn-secondary mb-2">Для клиента</a>
+                    <button class="btn btn-sm btn-secondary mb-2" disabled>Для агента</button>
+                    <div>
+                        <span class="reference _public">Клиент подписал акт: {{order.datetime_of_client_signed_the_end | formattedDateTime}}</span><br>
+                        <span class="reference _public">Агент подписал акт: {{order.datetime_of_ispolnitel_signed_the_end | formattedDateTime}}</span>
+                    </div>
+                </div>
                 <div class="text-center text-md-left" v-if="order.reacted && order.can_access">
-                    <button disabled class="btn btn-sm btn-success">Вы уже откликнулись!</button>
+                    <button disabled class="btn btn-sm btn-success">Вы уже откликнулись, скоро мы свяжемся с вами!</button>
                 </div>
                 <div class="text-center text-md-left" v-if="!order.reacted && order.can_access && order.status == 3">
                     <button @click="reactNow(index)" class="btn btn-success"><i class="fas fa-spinner fa-spin mr-2" v-if="order.virtual.reaction"></i>Откликнуться на заказ</button>
@@ -209,7 +237,9 @@
             city: {},
             graveyard: {},
             number_of_graves: '',
-            itogsum: '',
+            itogsum: 0,
+            itogsum_for_client: 0,
+            skidka_for_client: 0,
             tarif: '',
             tarif_stringify: '',
             status: '', 
@@ -225,7 +255,27 @@
                 reaction: false,
                 map: false,
             },
-            opened_order: 0
+            opened_order: 0,
+            manager_id: '',
+            manager: {},
+            order_services: {
+                data: [],
+                itog: 0
+            },
+            order_services_decode: {
+                data: [],
+                itog: 0
+            },
+            start_date_of_work: '',
+            end_date_of_work: '',
+            oriental_days_for_work: '',
+            type_of_order_object: 'Могила',   // ['Могила', 'Квартира', 'Помещение', 'Другое']
+            address_of_order_object: '',
+            final_comment: '',
+            datetime_of_client_signed_the_start: '',
+            datetime_of_client_signed_the_end: '',
+            datetime_of_ispolnitel_signed_the_start: '',
+            datetime_of_ispolnitel_signed_the_end: '',
         },        
       }
     },
@@ -419,3 +469,9 @@
     },
   }
 </script>
+<style scoped>
+    .left-border-line {
+        padding-left: 20px;
+        border-left: 2px solid #FF0000;   
+    }
+</style>
