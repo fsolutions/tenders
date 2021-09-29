@@ -14,14 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::resource('platform', 'API\PlatformController');
-
-Route::get('platform/web/{id}', 'API\PlatformController@webShow');
-Route::get('refollowers/web/{id}/{platform_id}', 'API\RefollowersController@changeAccount');
-
-Route::get('platform/web/openbox/{box_id}/{user_id}', 'API\BoxesController@openBox');
-
-Route::post('statistics/web/platform/opened/{id}', 'API\PlatformController@openPlatform');
+// Route::resource('order', 'API\OrderController');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

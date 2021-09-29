@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,27 +23,45 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/platforms', 'API\PlatformController@index')->name("platformIndex");
+Route::get('/orders', 'API\OrderController@index')->name("orderIndex");
+Route::get('orders/list', 'API\OrderController@list')->name("orderList");
+Route::get('orders/page/{id}', 'API\OrderController@showPage')->name("oneOrderPage");
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('platforms/list', 'API\PlatformController@list')->name("platformList");
-    Route::post('platforms', 'API\PlatformController@store');
-    Route::delete('platforms/{id}', 'API\PlatformController@destroy');
-    Route::put('platforms/{id}', 'API\PlatformController@update');
-    Route::get('platforms/{id}', 'API\PlatformController@show')->name("onePlatform");
-    Route::get('platforms/page/{id}', 'API\PlatformController@showPage')->name("onePlatformPage");
 
-    Route::get('platforms/boxes/create-default/{id}', 'API\PlatformController@createDefaultBoxes');
-    Route::resource('platforms/boxes', 'API\BoxesController');
-
-    Route::get('platforms/boxes/kupons/list', 'API\KuponsController@list');
-    Route::post('platforms/boxes/kupons', 'API\KuponsController@store');
-    Route::delete('platforms/boxes/kupons/{id}', 'API\KuponsController@destroy');
-    Route::put('platforms/boxes/kupons/{id}', 'API\KuponsController@update');
-    Route::post('platforms/boxes/delete-all-kupons/{id}', 'API\KuponsController@deleteAllKupons');
-    Route::post('platforms/boxes/kupons-delete', 'API\KuponsController@deleteSelectedKupons');
-
-    Route::get('platforms/statistics/all-numbers/{platform_id}', 'API\StatisticsController@allNumbers');
+    Route::post('orders', 'API\OrderController@store');
+    Route::delete('orders/{id}', 'API\OrderController@destroy');
+    Route::put('orders/{id}', 'API\OrderController@update');
+    Route::get('orders/{id}', 'API\OrderController@show')->name("oneOrder");
+    Route::get('orders/reaction/{id}', 'API\OrderController@sendReaction');
+    Route::get('api/services', 'API\ListsController@servicesIndex');
+    Route::get('api/cities', 'API\ListsController@citiesIndex');
+    Route::get('api/graveyards/{city_id}', 'API\ListsController@graveyardsIndex');
 
     Route::post('send-question', 'API\QuestionController@sendMessage');
+
+    Route::get('order-create', function () {
+        return view('orders.create');
+    });
 });
+
+Route::get('/logout', function () {
+    Auth::logout();
+    Session::flush();
+    return Redirect::to('/');
+});
+
+Route::get('/terms', function () {
+    return view('pages.terms');
+});
+
+Route::get('/privacy-policy', function () {
+    return view('pages.privacy-policy');
+});
+
+// Route::get('/notify', function () {
+//     $order = \App\Model\Order::find(77);
+//     $order->notify(new \App\Notifications\NewOrderPublished('111', '222'));
+
+//     return true;
+// });

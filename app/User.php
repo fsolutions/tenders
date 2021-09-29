@@ -2,13 +2,15 @@
 
 namespace App;
 
+use App\Companies;
+use App\Traits\HasRolesAndPermissions;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasRolesAndPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -36,4 +38,25 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    /**
+     * User Companies
+     * 
+     * @return mixed
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Companies::class, 'users_companies', 'user_id', 'companies_id');
+    }
+
+    /**
+     * User Reactions on Order
+     * 
+     * @return mixed
+     */
+    public function react()
+    {
+        return $this->belongsToMany('App\Model\Order', 'order_user', 'user_id', 'order_id');
+    }
 }
