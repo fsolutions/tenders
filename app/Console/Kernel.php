@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('orders:sendmailstotelegram')->cron('*/3 * * * *');
         $schedule->command('orders:sendnewtotelegram')->everyTenMinutes();
         $schedule->command('orders:sendnewtowhatsup')->everyTenMinutes();
     }
