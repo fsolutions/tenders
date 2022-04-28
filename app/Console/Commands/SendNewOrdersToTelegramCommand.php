@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Bundles\Telegram\Notifications\NewOrderNotification;
 
 /**
  * Class SendNewOrdersToTelegramCommand
@@ -53,6 +54,9 @@ class SendNewOrdersToTelegramCommand extends Command
     foreach ($orders as $order) {
       $notify = new \App\Notifications\NewUnworkedOrderRecieved($order);
       $notify->toTelegram();
+
+      $userRobotNotify = new NewOrderNotification();
+      $userRobotNotify->send($order);
 
       $update = DB::update(
         'update orders_primary set sended_to_telegram = 1 where id = ?',

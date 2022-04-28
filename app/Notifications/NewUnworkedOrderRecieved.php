@@ -51,6 +51,7 @@ class NewUnworkedOrderRecieved extends Notification
 
             "<b>Имя: </b>" . $this->orderInfo->name . "\n" .
             "<b>Телефон: </b>" . $this->orderInfo->phone . "\n\n" .
+            // "<a href=\"whatsapp://send?phone=" . $this->orderInfo->phone . "\">Попробовать в WhatsUp >></a>\n\n" .
 
             "Бюджет: от " . $this->orderInfo->budjet . "\n" .
             "Скидка: " . $this->orderInfo->skidka . "\n" .
@@ -72,7 +73,7 @@ class NewUnworkedOrderRecieved extends Notification
         curl_setopt(
             $ch,
             CURLOPT_POSTFIELDS,
-            'chat_id=' . $channel_id . '&text=' . urlencode($messageEnd) . '&parse_mode=html'
+            'chat_id=' . $channel_id . '&text=' . urlencode($messageEnd) . '&parse_mode=HTML'
         );
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 

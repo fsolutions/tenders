@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\Telegram\TelegramController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Route::resource('order', 'API\OrderController');
+Route::any('/' . env('TELEGRAM_TOKEN'), [TelegramController::class, 'index'])->name('webhook');
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
