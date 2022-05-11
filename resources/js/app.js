@@ -40,6 +40,7 @@ Vue.component('orders', require('./components/OrderComponent.vue').default);
 Vue.component('one-order', require('./components/OneOrderComponent.vue').default);
 Vue.component('one-client-order', require('./components/ClientOrderNaryadActComponent.vue').default);
 Vue.component('order-create', require('./components/OrderCreate.vue').default);
+Vue.component('dashboard', require('./components/dashboard/Main.vue').default);
 Vue.component('footer-block', require('./components/Footer.vue').default);
 
 

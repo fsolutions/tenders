@@ -60,6 +60,7 @@
                                             @if (Auth::check() && Auth::user()->id == 1)
                                             <li class="nav-item">
                                                 <a href="/order-create" class="nav-link">Создать заказ</a>
+                                                <a href="/dashboard" class="nav-link">Dashboard</a>
                                             </li>
                                             @endif
                                             <!-- <li class="nav-item">

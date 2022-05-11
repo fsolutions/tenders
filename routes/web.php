@@ -1,6 +1,5 @@
 <?php
 
-use App\Model\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -51,6 +50,11 @@ Route::group(['middleware' => ['auth']], function () {
         return view('orders.create');
     });
     Route::get('order-edit/{id}', 'API\OrderController@orderEdit')->name("orderEdit");
+
+    Route::get('dashboard', function () {
+        return view('dashboard.main');
+    });
+    Route::get('api/tg/numbers', 'API\Telegram\TelegramController@numbers');
 });
 
 Route::get('/logout', function () {

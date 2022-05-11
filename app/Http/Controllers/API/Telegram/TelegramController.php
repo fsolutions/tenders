@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\API\Telegram;
 
+use Carbon\Carbon;
+use App\Model\TGUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Traits\Telegram\RequestTrait;
@@ -77,16 +80,47 @@ class TelegramController extends Controller
                 TelegramAddRegionAction::start($chatId);
             } else if ($action == '/spisok_moih_regionov' || $action == 'Список моих регионов') {
                 TelegramListOfMyRegionsAction::make($chatId);
-            } else if ($channelName != '') {
-                TelegramAddRegionAction::add($chatId, $userId, $channelName);
-            } else if (isset($requestData->message->forward_from_chat)) {
-                TelegramForwardMessageAction::make($requestData);
             } else {
                 TelegramEmptyAction::make($chatId);
             }
         }
 
         return true;
+    }
+
+    /**
+     * Get all tg numbers
+     *
+     * @return void
+     */
+    public function numbers()
+    {
+        $todayObject = Carbon::now();
+        $from = $todayObject->startOfDay()->toDateTimeString();
+        $to = $todayObject->endOfDay()->toDateTimeString();
+
+        $allOrders = DB::table('orders_primary')->count();
+        $allOrdersToday = DB::table('orders_primary')->whereBetween('created_at', [$from, $to])->count();
+
+        $numbers = array(
+            'today_order_numbers' => array(
+                'title' => 'Кол-во заказов за сегодня',
+                'color' => 'text-white bg-success',
+                'number' => $allOrdersToday
+            ),
+            'all_order_numbers' => array(
+                'title' => 'Кол-во заказов всего',
+                'color' => 'bg-light',
+                'number' => $allOrders
+            ),
+            'tg_user_numbers' => array(
+                'title' => 'Кол-во агентов в роботе телеграм',
+                'color' => 'text-white bg-info',
+                'number' => TGUser::get()->count()
+            ),
+        );
+
+        return $numbers;
     }
 
     /**

@@ -21,11 +21,12 @@ class NewOrderNotification
    */
   static function send($orderInfo): bool
   {
-    $text = "<b>#" . $orderInfo->id . ": Новый заказ «" . $orderInfo->usluga . "»</b>\n\n" .
+    // $text = "<b>#" . $orderInfo->id . ": Новый заказ «" . $orderInfo->usluga . "»</b>\n\n" .
+    $text = "<b>#" . $orderInfo->id . ": Новый заказ. Поиск исполнителя</b>\n\n" .
       "Заявка со страницы: " . $orderInfo->url . "\n\n" .
 
-      "<b>Имя: </b>Уточняйте у менеджера\n" .
-      "<b>Телефон: </b> Уточняйте у менеджера\n\n" .
+      "<b>Имя: </b>Доступно при отклике\n" .
+      "<b>Телефон: </b> Доступно при отклике\n\n" .
 
       "Бюджет: от " . $orderInfo->budjet . "\n" .
       "Скидка: " . $orderInfo->skidka . "\n" .
@@ -69,7 +70,7 @@ class NewOrderNotification
       $slugedCityName = $slugifier->make($cityToFind, '-', false);
       $slugedCityName = mb_substr($slugedCityName, 0, 5);
 
-      $regionsDB = DB::select('SELECT `id`, `description` FROM `modx_site_content` WHERE `template` = 5 AND `id` IN (SELECT `parent` FROM `modx_site_content` WHERE `alias` LIKE \'%' . $slugedCityName . '%\' AND `template` = 6)');
+      $regionsDB = DB::select('SELECT `id`, `description` FROM `modx_site_content` WHERE `template` = 5 AND `id` IN (SELECT `parent` FROM `modx_site_content` WHERE `alias` LIKE \'' . $slugedCityName . '%\' AND `template` = 6)');
 
       foreach ($regionsDB as $region) {
         if (!is_null($region->description)) {

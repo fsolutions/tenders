@@ -42,10 +42,17 @@ class StartAction
       ]
     ];
 
+    self::apiRequest('sendPhoto', [
+      'chat_id' => $chatId,
+      'photo' => 'https://tenders.gravescare.com/img/promo/start_screen.jpg',
+      'caption' => '',
+      'reply_markup' => self::keyboardBtn($options)
+    ]);
+
     self::apiRequest('sendMessage', [
       'chat_id' => $chatId,
-      'text' => $text,
-      'reply_markup' => self::keyboardBtn($options)
+      'text' => 'В ближайшее время тут появятся новые заказы...',
+      // 'reply_markup' => self::keyboardBtn($options)
     ]);
 
     TGUser::updateOrCreate(

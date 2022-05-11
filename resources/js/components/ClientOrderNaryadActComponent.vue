@@ -62,51 +62,53 @@
                             </tr>
                         </table>
 
-                        <table class="table hover caption-top responsive" v-if="order.order_services && order.order_services.data">
-                            <thead v-if="order.order_services && order.order_services.data.length > 0">
-                                <tr>
-                                    <template v-if="param == ''">
-                                        <td colspan="5">Перечень утвержденных услуг*:</td>
-                                    </template>
-                                    <template v-if="param == 'act'">
-                                        <td colspan="5">Перечень выполненных услуг*:</td>
-                                    </template>
-                                </tr>
-                                <tr>
-                                    <th class="text-center" style="width: 5%;">№</th>
-                                    <th>Услуга</th>
-                                    <th class="text-center" style="width: 7%;">Кол-во</th>
-                                    <th class="text-center" style="width: 15%;">Цена</th>
-                                    <th class="text-center" style="width: 15%;">Стоимость</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="order.order_services && order.order_services.data.length > 0">
-                                <tr v-for="(service, index) in order.order_services.data" :key="index">
-                                    <td class="text-center align-middle">{{service.id}}</td>
-                                    <td class="align-middle position-relative">
-                                        {{ service.name }}
-                                    </td>
-                                    <td class="text-center align-middle">
-                                        {{ service.number }}
-                                    </td>
-                                    <td class="text-center align-middle">
-                                        {{ service.sum }} руб.
-                                    </td>
-                                    <td class="text-center align-middle">{{(Number(service.number ? service.number : 1) * service.sum)}} руб.</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="5" class="text-right"><b>Стоимость: </b> {{ (Number(order.itogsum_for_client)).toFixed(0) }} руб.</th>
-                                </tr>
-                                <tr>
-                                    <th colspan="5" class="text-right"><b>Скидка: </b> {{ (Number(order.skidka_for_client)).toFixed(0) }} руб.</th>
-                                </tr>
-                                <tr>
-                                    <th colspan="5" class="text-right"><b>Стоимость со скидкой: </b> {{ (order.itogsum_for_client - order.skidka_for_client).toFixed(0) }} руб.</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table hover caption-top responsive" v-if="order.order_services && order.order_services.data">
+                                <thead v-if="order.order_services && order.order_services.data.length > 0">
+                                    <tr>
+                                        <template v-if="param == ''">
+                                            <td colspan="5">Перечень утвержденных услуг*:</td>
+                                        </template>
+                                        <template v-if="param == 'act'">
+                                            <td colspan="5">Перечень выполненных услуг*:</td>
+                                        </template>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center" style="width: 5%;">№</th>
+                                        <th>Услуга</th>
+                                        <th class="text-center" style="width: 7%;">Кол-во</th>
+                                        <th class="text-center" style="width: 15%;">Цена</th>
+                                        <th class="text-center" style="width: 15%;">Стоимость</th>
+                                    </tr>
+                                </thead>
+                                <tbody v-if="order.order_services && order.order_services.data.length > 0">
+                                    <tr v-for="(service, index) in order.order_services.data" :key="index">
+                                        <td class="text-center align-middle">{{service.id}}</td>
+                                        <td class="align-middle position-relative">
+                                            {{ service.name }}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {{ service.number }}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            {{ service.sum }} руб.
+                                        </td>
+                                        <td class="text-center align-middle">{{(Number(service.number ? service.number : 1) * service.sum)}} руб.</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right"><b>Стоимость: </b> {{ (Number(order.itogsum_for_client)).toFixed(0) }} руб.</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="5" class="text-right"><b>Скидка: </b> {{ (Number(order.skidka_for_client)).toFixed(0) }} руб.</th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="5" class="text-right"><b>Стоимость со скидкой: </b> {{ (order.itogsum_for_client - order.skidka_for_client).toFixed(0) }} руб.</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <p v-if="order.order_services"><em>* Перечисляемые услуги могут включать в себя приобретение дополнительных материалов, 
                             например, лако-красочные изделия, изделия из металла, камня, чистящие средства и так далее.</em></p>
                     </div>
