@@ -28,8 +28,8 @@
         <div class="wrapper fadeInDown">
             <div id="formContent" style="margin-top: 30px;">
                 <!-- Icon -->
-                <div class="fadeIn first text-center py-4">
-                    <img src="/img/promo/logo.jpg" style="width: 100%; height: auto; max-width: 200px;" alt="Сервис Gravescare Tenders">
+                <div class="fadeIn first text-center auth-logo">
+                    <img src="/img/promo/toplogo2.png" alt="Сервис Gravescare Tenders">
                 </div>
 
                 @if (Route::has('login'))

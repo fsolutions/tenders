@@ -977,6 +977,20 @@ a {
     width: min(100%, 460px);
 }
 
+.auth-logo {
+    padding: 2.75rem 2rem 1.75rem;
+}
+
+.auth-logo img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 220px;
+    max-height: 72px;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
 #formFooter {
     background: #f7faf5;
     border-top: 1px solid var(--gc-border);
