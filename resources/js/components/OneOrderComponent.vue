@@ -31,7 +31,7 @@
                         </div>
                     </div>
 
-                    <div class="b-tender__info mt-4" v-if="order.user_web_users_name || order.user_web_users_phone || order.user_web_users_email" style="border: 1px solid #ff0000; padding: 20px;">
+                    <div class="b-tender__info b-tender__customer mt-4" v-if="order.user_web_users_name || order.user_web_users_phone || order.user_web_users_email">
                         <div class="b-tender__info-item" v-if="order.user_web_users_name">
                             <div class="b-tender__info-item-title">Имя заказчика:</div>
                             <div class="b-tender__info-item-text">{{order.user_web_users_name}}</div>

@@ -16,7 +16,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
-    <link href="//fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="//fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link href="/css/bootstrap-slider.min.css" rel="stylesheet">
     <link href="//cdn.jsdelivr.net/npm/suggestions-jquery@20.3.0/dist/css/suggestions.min.css" rel="stylesheet" />
@@ -36,18 +36,18 @@
                 <div class="order__header">
                     <div class="order__header__bg"></div>
 
-                    <div class="container px-4">
-                        <div class="row">
-                            <div class="col-sm-12 col-md-3 text-center text-md-left mt-2">
-                                <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare"></a>
+                    <div class="container px-3 px-md-4 py-2">
+                        <div class="row align-items-center">
+                            <div class="col-8 col-md-3 text-left mt-1 mt-md-2">
+                                <a href="/orders/"><img src="/img/cabinet/logo.png" class="img-fluid" alt="Gravescare" style="max-height: 52px; width: auto;"></a>
                             </div>
                             <div class="col-sm-12 col-md-5 col-lg-6 order__header__settings__mainblock">
-                                <nav class="navbar navbar-expand-lg navbar-light">
-                                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                <nav class="navbar navbar-expand-lg navbar-light px-0">
+                                    <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                         <span class="navbar-toggler-icon"></span>
                                     </button>
                                     <div class="collapse navbar-collapse" id="navbarNav">
-                                        <ul class="navbar-nav mr-auto pt-4 mt-1">
+                                        <ul class="navbar-nav mr-auto pt-2 pt-lg-4 mt-1">
                                             <li class="nav-item active">
                                                 <a href="/orders" class="nav-link">Каталог тендеров</a>
                                             </li>
@@ -63,14 +63,18 @@
                                                 <a href="/dashboard" class="nav-link">Dashboard</a>
                                             </li>
                                             @endif
-                                            <!-- <li class="nav-item">
-                                                <a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="nav-link" target="_blank"><img src="https://gravescare.com/assets/templates/graves/img/telegram_zakaz.png" style="height: 54px; width: auto;" alt="Подписка на заказы в группе Telegram"></a>
-                                            </li> -->
                                         </ul>
+                                        <div class="d-lg-none mt-2 mb-2">
+                                            @if (!Auth::check())
+                                            <a href="/register" class="btn btn-success btn-block">Участвовать в тендерах</a>
+                                            @else
+                                            <a href="https://t.me/joinchat/VgkBnPIzKvrTm7H1" class="btn btn-info btn-block" target="_blank">Тендеры в Telegram <i class="fab fa-telegram-plane"></i></a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </nav>
                             </div>
-                            <div class="col-sm-12 col-md-4 col-lg-3 text-center text-md-right pt-3 mt-1">
+                            <div class="col-sm-12 col-md-4 col-lg-3 text-center text-md-right pt-2 pt-md-3 mt-1 d-none d-lg-block">
                                 @if (!Auth::check())
                                 <a href="/register" class="btn btn-success">Участвовать в тендерах</a>
                                 <div style="line-height: 13px;" class="pt-1 pb-3"><small class="text-muted">Приглашаем <b>компании и частные лица</b> к участию в тендерах на ритуальные услуги!</small></div>

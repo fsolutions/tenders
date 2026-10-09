@@ -1,23 +1,38 @@
 // Body
-$body-bg: #f2f2f2;
+$body-bg: #f4f6f3;
 
 // Typography
-$font-family-sans-serif: 'Roboto', sans-serif;
-$font-size-base: 0.9rem;
-$line-height-base: 1.6;
+$font-family-sans-serif: 'Manrope', 'Roboto', sans-serif;
+$font-size-base: 0.95rem;
+$line-height-base: 1.55;
 
-// Colors
+// Brand colors (Gravescare)
 $blue: #29aae3;
 $indigo: #6574cd;
 $purple: #9561e2;
 $pink: #f66d9b;
-$red: #ff0000;
+$red: #e24b4b;
 $orange: #f6993f;
 $yellow: #ffed4a;
 $green: #5a9530;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
-$danger: #ff0000;
+$danger: #e24b4b;
 $warning: #fbb040;
 $success: #5a9530;
 $info: #29aae3;
+
+// Soft modern UI
+$border-radius: 0.65rem;
+$border-radius-lg: 0.9rem;
+$border-radius-sm: 0.45rem;
+$enable-shadows: false;
+$enable-rounded: true;
+$input-border-color: #d9e0d6;
+$input-focus-border-color: #5a9530;
+$card-border-color: rgba(37, 73, 6, 0.08);
+$card-border-radius: $border-radius-lg;
+$btn-border-radius: 0.55rem;
+$btn-border-radius-lg: 0.7rem;
+$btn-border-radius-sm: 0.4rem;
+$modal-content-border-radius: $border-radius-lg;
