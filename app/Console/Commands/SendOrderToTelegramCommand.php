@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Order;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class SendOrderToTelegramCommand
@@ -50,60 +52,79 @@ class SendOrderToTelegramCommand extends Command
 
     $orders = Order::where('sended_to_telegram', '=', 0)->get();
     $orders->load(['city', 'graveyard']);
+    $sended = 0;
 
     foreach ($orders as $order) {
-      $graveyardName = "-";
+      try {
+        $claimed = DB::table('orders')
+          ->where('id', $order->id)
+          ->where('sended_to_telegram', 0)
+          ->update(['sended_to_telegram' => 1]);
 
-      if ($order->order_object_name_ext) {
-        $graveyardName = $order->order_object_name_ext;
-      } else if ($order->graveyard && $order->graveyard->pagetitle) {
-        $graveyardName = $order->graveyard->pagetitle;
-      }
-
-      $orderServices = ['data' => [], 'itog' => 0];
-
-      // Если есть услуги в новом формате
-      if (isset($order->order_services)) {
-        $orderServices = json_decode($order->order_services);
-      }
-
-      $orderInfoForTelegramString = "";
-
-      // Если работаем со старым форматом
-      if (!isset($orderServices->data) || count($orderServices->data) == 0) {
-        $orderInfoForTelegram = unserialize($order->order_txt);
-
-        foreach ($orderInfoForTelegram as $orderrow) {
-          $orderInfoForTelegramString .= "- " . $orderrow["name"] . "\n";
+        if ($claimed === 0) {
+          continue;
         }
-      } else {
-        foreach ($orderServices->data as $orderrow) {
-          $orderInfoForTelegramString .= "- " . $orderrow->name . "\n";
+
+        $graveyardName = "-";
+
+        if ($order->order_object_name_ext) {
+          $graveyardName = $order->order_object_name_ext;
+        } else if ($order->graveyard && $order->graveyard->pagetitle) {
+          $graveyardName = $order->graveyard->pagetitle;
         }
-      }
 
-      if ($orderInfoForTelegramString == '') {
-        $orderInfoForTelegramString = 'Уточняйте у нашего менеджера';
-      }
+        $orderServices = ['data' => [], 'itog' => 0];
 
-      if ($order->opened_order == 1) {
-        $order = $order->makeVisible([
-          // 'user_web_users_id',
-          'user_web_users_name',
-          'user_web_users_phone',
-          'user_web_users_email',
+        // Если есть услуги в новом формате
+        if (isset($order->order_services)) {
+          $orderServices = json_decode($order->order_services);
+        }
+
+        $orderInfoForTelegramString = "";
+
+        // Если работаем со старым форматом
+        if (!isset($orderServices->data) || count($orderServices->data) == 0) {
+          $orderInfoForTelegram = Order::safeUnserializeOrderTxt($order->order_txt);
+
+          foreach ($orderInfoForTelegram as $orderrow) {
+            if (isset($orderrow['name'])) {
+              $orderInfoForTelegramString .= "- " . $orderrow["name"] . "\n";
+            }
+          }
+        } else {
+          foreach ($orderServices->data as $orderrow) {
+            $orderInfoForTelegramString .= "- " . $orderrow->name . "\n";
+          }
+        }
+
+        if ($orderInfoForTelegramString == '') {
+          $orderInfoForTelegramString = 'Уточняйте у нашего менеджера';
+        }
+
+        if ($order->opened_order == 1) {
+          $order = $order->makeVisible([
+            // 'user_web_users_id',
+            'user_web_users_name',
+            'user_web_users_phone',
+            'user_web_users_email',
+          ]);
+        }
+
+        $order->notify(new \App\Notifications\NewOrderPublished($graveyardName, $orderInfoForTelegramString));
+        $sended++;
+        echo 'Order #' . $order->id . ' sended to telegram.';
+        echo "\r\n";
+      } catch (\Throwable $e) {
+        Log::error('orders:sendnewtotelegram failed for order #' . $order->id, [
+          'exception' => $e->getMessage(),
         ]);
+        echo 'Order #' . $order->id . ' failed: ' . $e->getMessage();
+        echo "\r\n";
       }
-
-      $order->notify(new \App\Notifications\NewOrderPublished($graveyardName, $orderInfoForTelegramString));
-      $order->sended_to_telegram = 1;
-      $order->save();
-      echo 'Order #' . $order->id . ' sended to telegram.';
-      echo "\r\n";
     }
 
     echo "\r\n";
-    echo "Num of sended orders to telegram: " . count($orders);
+    echo "Num of sended orders to telegram: " . $sended;
     echo "\r\n";
   }
 }

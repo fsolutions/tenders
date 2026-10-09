@@ -68,8 +68,6 @@ class Order extends Model
     'itogsum',
     'itogsum_for_client',
     'skidka_for_client',
-    'sended_to_telegram',
-    'sended_to_whatsup',
     'status',
     'opened_order',
     'updatetime',
@@ -132,6 +130,31 @@ class Order extends Model
   }
 
   /**
+   * Safely unserialize order_txt; empty/corrupt payload yields [].
+   *
+   * @param  mixed  $orderTxt
+   * @return array
+   */
+  public static function safeUnserializeOrderTxt($orderTxt)
+  {
+    if ($orderTxt === null || $orderTxt === '') {
+      return [];
+    }
+
+    if (is_array($orderTxt)) {
+      return $orderTxt;
+    }
+
+    $order = @unserialize($orderTxt);
+
+    if ($order === false || !is_array($order)) {
+      return [];
+    }
+
+    return $order;
+  }
+
+  /**
    * Get stringify order txt
    *
    * @param  string  $value
@@ -139,11 +162,14 @@ class Order extends Model
    */
   public function getOrdertxtStringifyAttribute()
   {
-    $order = unserialize($this->order_txt);
+    $order = self::safeUnserializeOrderTxt($this->order_txt);
     $orderfinal = "";
 
     $orderfinal .= '<ul style="padding-left: 15px;">';
     foreach ($order as $key => $orderrow) {
+      if (!isset($orderrow['id'], $orderrow['name'])) {
+        continue;
+      }
       $orderfinal .= '<li class="usl" data-id="' . $orderrow['id'] . '">' . $orderrow['name'] . '</li>';
     }
     $orderfinal .= '</ul>';

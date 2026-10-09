@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Model\Order;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class SendOrderToWhatsupCommand
@@ -47,7 +49,7 @@ class SendOrderToWhatsupCommand extends Command
   {
     $tarifInfo = "Тип: " . $order->tarif_stringify;
     $uslugiInfo = "*Услуги: *\n" . $uslugiList;
-    $cityInfo = "Город: " . $order->city->pagetitle;
+    $cityInfo = "Город: " . ($order->city ? $order->city->pagetitle : '-');
     $graveyardInfo = $graveyardName != '-' ? "Кладбище: " . $graveyardName . "\n" : '';
     $costInfo = "*Бюджет: * от " . $order->itogsum . ' руб.';
     $numberOfGraves = "";
@@ -100,36 +102,62 @@ class SendOrderToWhatsupCommand extends Command
 
     $orders = Order::where('sended_to_whatsup', '=', 0)->limit(10)->get();
     $orders->load(['city', 'graveyard']);
+    $sended = 0;
 
     // Найдем по городам регион
 
     foreach ($orders as $order) {
-      $chatId = $economicRegions[$order->order_economic_region_id]['chatId'];
-      $graveyardName = "-";
+      try {
+        $claimed = DB::table('orders')
+          ->where('id', $order->id)
+          ->where('sended_to_whatsup', 0)
+          ->update(['sended_to_whatsup' => 1]);
 
-      if ($order->order_object_name_ext) {
-        $graveyardName = $order->order_object_name_ext;
-      } else if ($order->graveyard && $order->graveyard->pagetitle) {
-        $graveyardName = $order->graveyard->pagetitle;
+        if ($claimed === 0) {
+          continue;
+        }
+
+        if (!isset($economicRegions[$order->order_economic_region_id])) {
+          Log::warning('orders:sendnewtowhatsup missing economic region for order #' . $order->id, [
+            'order_economic_region_id' => $order->order_economic_region_id,
+          ]);
+          continue;
+        }
+
+        $chatId = $economicRegions[$order->order_economic_region_id]['chatId'];
+        $graveyardName = "-";
+
+        if ($order->order_object_name_ext) {
+          $graveyardName = $order->order_object_name_ext;
+        } else if ($order->graveyard && $order->graveyard->pagetitle) {
+          $graveyardName = $order->graveyard->pagetitle;
+        }
+
+        $orderInfoForWhatsup = Order::safeUnserializeOrderTxt($order->order_txt);
+        $orderInfoForWhatsupString = "";
+
+        foreach ($orderInfoForWhatsup as $orderrow) {
+          if (isset($orderrow['name'])) {
+            $orderInfoForWhatsupString .= "- " . $orderrow["name"] . "\n";
+          }
+        }
+
+        // $order->notify(new \App\Notifications\NewOrderPublished($graveyardName, $orderInfoForWhatsupString));
+        $this->sendToWhatsupChatMessage($chatId, $orderInfoForWhatsupString, $order, $graveyardName);
+        $sended++;
+        echo 'Order #' . $order->id . ' sended to whatsup.';
+        echo "\r\n";
+      } catch (\Throwable $e) {
+        Log::error('orders:sendnewtowhatsup failed for order #' . $order->id, [
+          'exception' => $e->getMessage(),
+        ]);
+        echo 'Order #' . $order->id . ' failed: ' . $e->getMessage();
+        echo "\r\n";
       }
-
-      $orderInfoForWhatsup = unserialize($order->order_txt);
-      $orderInfoForWhatsupString = "";
-
-      foreach ($orderInfoForWhatsup as $orderrow) {
-        $orderInfoForWhatsupString .= "- " . $orderrow["name"] . "\n";
-      }
-
-      // $order->notify(new \App\Notifications\NewOrderPublished($graveyardName, $orderInfoForWhatsupString));
-      $this->sendToWhatsupChatMessage($chatId, $orderInfoForWhatsupString, $order, $graveyardName);
-      $order->sended_to_whatsup = 1;
-      $order->save();
-      echo 'Order #' . $order->id . ' sended to whatsup.';
-      echo "\r\n";
     }
 
     echo "\r\n";
-    echo "Num of sended orders to whatsup: " . count($orders);
+    echo "Num of sended orders to whatsup: " . $sended;
     echo "\r\n";
   }
 }

@@ -175,7 +175,7 @@ class OrderController extends Controller
         //     return response()->json(['error' => $validator->errors()], 422);
         // }
 
-        $requestData = $request->all();
+        $requestData = $request->except(['sended_to_telegram', 'sended_to_whatsup']);
 
         $requestData['paymentid'] = '';
         $requestData['paymenturl'] = '';
@@ -223,7 +223,7 @@ class OrderController extends Controller
     public function orderEdit($id)
     {
         $order = Order::find($id);
-        $order->order_txt_preped = unserialize($order->order_txt);
+        $order->order_txt_preped = Order::safeUnserializeOrderTxt($order->order_txt);
         $order->order_services = isset($order->order_services) ? json_decode($order->order_services) : ['data' => [], 'itog' => 0];
 
         $order->makeVisible([
@@ -252,7 +252,7 @@ class OrderController extends Controller
         // if ($validator->fails()) {
         //     return response()->json(['error' => $validator->errors()], 422);
         // }
-        $requestData = $request->all();
+        $requestData = $request->except(['sended_to_telegram', 'sended_to_whatsup']);
 
         if (isset($requestData['updatetime'])) {
             unset($requestData['updatetime']);
@@ -354,7 +354,12 @@ class OrderController extends Controller
             'user_web_passport'
         ]);
 
-        Auth::user()->react()->attach($order->id);
+        try {
+            Auth::user()->react()->attach($order->id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Duplicate pivot — already reacted, do not resend mail/Telegram
+            return true;
+        }
 
         $userToSend = [
             'id' => 'Новый пользователь',
@@ -365,21 +370,23 @@ class OrderController extends Controller
 
         if ($this->userId != NULL) {
             $user = User::find($this->userId);
-            $userToSend = [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone
-            ];
+            if ($user) {
+                $userToSend = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone
+                ];
+            }
         }
 
         Mail::to("info@gravescare.com")->send(new SendReaction($order, $userToSend, 'Отклик на заказ #' . $order->id));
 
         $message = "<b>Отклик на заказ #" . $order->id . "</b>\n\n" .
-            "ID пользователя: " . $user->id . "\n" .
-            "Имя пользователя: " . $user->name . "\n" .
-            "Email пользователя: " . $user->email . "\n" .
-            "Телефон пользователя: " . $user->phone . "\n\n" .
+            "ID пользователя: " . $userToSend['id'] . "\n" .
+            "Имя пользователя: " . $userToSend['name'] . "\n" .
+            "Email пользователя: " . $userToSend['email'] . "\n" .
+            "Телефон пользователя: " . $userToSend['phone'] . "\n\n" .
 
             "Ссылка на заказ: <a href='https://tenders.gravescare.com/order-edit/" . $order->id . "'>Перейти »</a>\n";
 

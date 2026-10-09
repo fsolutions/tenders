@@ -70,7 +70,10 @@ class NewOrderNotification
       $slugedCityName = $slugifier->make($cityToFind, '-', false);
       $slugedCityName = mb_substr($slugedCityName, 0, 5);
 
-      $regionsDB = DB::select('SELECT `id`, `description` FROM `modx_site_content` WHERE `template` = 5 AND `id` IN (SELECT `parent` FROM `modx_site_content` WHERE `alias` LIKE \'' . $slugedCityName . '%\' AND `template` = 6)');
+      $regionsDB = DB::select(
+        'SELECT `id`, `description` FROM `modx_site_content` WHERE `template` = 5 AND `id` IN (SELECT `parent` FROM `modx_site_content` WHERE `alias` LIKE ? AND `template` = 6)',
+        [$slugedCityName . '%']
+      );
 
       foreach ($regionsDB as $region) {
         if (!is_null($region->description)) {

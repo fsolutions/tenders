@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Bundles\Telegram\Notifications\NewOrderNotification;
 
 /**
@@ -50,25 +51,39 @@ class SendNewOrdersToTelegramCommand extends Command
     echo "\r\n";
 
     $orders = DB::select('select * from orders_primary where sended_to_telegram = ?', [0]);
+    $sended = 0;
 
     foreach ($orders as $order) {
-      $notify = new \App\Notifications\NewUnworkedOrderRecieved($order);
-      $notify->toTelegram();
+      try {
+        $claimed = DB::update(
+          'update orders_primary set sended_to_telegram = 1 where id = ? and sended_to_telegram = 0',
+          [$order->id]
+        );
 
-      $userRobotNotify = new NewOrderNotification();
-      $userRobotNotify->send($order);
+        if ($claimed === 0) {
+          continue;
+        }
 
-      $update = DB::update(
-        'update orders_primary set sended_to_telegram = 1 where id = ?',
-        [$order->id]
-      );
+        $notify = new \App\Notifications\NewUnworkedOrderRecieved($order);
+        $notify->toTelegram();
 
-      echo 'Order #' . $order->id . ' sended to telegram.';
-      echo "\r\n";
+        $userRobotNotify = new NewOrderNotification();
+        $userRobotNotify->send($order);
+
+        $sended++;
+        echo 'Order #' . $order->id . ' sended to telegram.';
+        echo "\r\n";
+      } catch (\Throwable $e) {
+        Log::error('orders:sendneworderstotelegram failed for order #' . $order->id, [
+          'exception' => $e->getMessage(),
+        ]);
+        echo 'Order #' . $order->id . ' failed: ' . $e->getMessage();
+        echo "\r\n";
+      }
     }
 
     echo "\r\n";
-    echo "Num of sended orders to telegram: " . count($orders);
+    echo "Num of sended orders to telegram: " . $sended;
     echo "\r\n";
   }
 }

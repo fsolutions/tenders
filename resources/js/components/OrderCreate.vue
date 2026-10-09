@@ -302,7 +302,7 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button @click="submitForm($event)" class="btn btn-lg btn-success">
+                        <button @click="submitForm($event)" class="btn btn-lg btn-success" :disabled="orderPublication">
                             <i class="fas fa-spinner fa-spin mr-2" v-if="orderPublication"></i>{{submitButtonText}}
                         </button>
                     </div>
@@ -547,6 +547,9 @@
             }
         },
         createOrder() {
+            if (this.orderPublication) {
+                return
+            }
             this.loading = true;
             this.orderPublication = true
 
@@ -568,6 +571,9 @@
             
         },
         updateOrder() {
+            if (this.orderPublication) {
+                return
+            }
             this.loading = true;
             this.orderPublication = true
 
